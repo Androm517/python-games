@@ -1,3 +1,3 @@
 # python-games
-games in python
+games in python,
 No GUI games
