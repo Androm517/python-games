@@ -43,7 +43,7 @@ class Chessboard:
             return move_from[-1::-1], move_to[-1::-1]
         return None, None
 
-    def boardRepresentationCLI(self):
+    def __str__(self):
         s = '   A B C D E F G H \n'
         for row in '12345678'[-1::-1]:
             s += row + ' '
@@ -57,4 +57,4 @@ class Chessboard:
 
     def print(self, message):
         if message == 'print':
-            print(self.boardRepresentationCLI())
+            print(self)
