@@ -45,13 +45,13 @@ class Chessboard:
 
     def print(self, message):
         if message == 'print':
-            s = '\t\t A\t\t B\t\t C\t\t D\t\t E\t\t F\t\t G\t\t H \n'
+            s = '   A B C D E F G H \n'
             for row in '12345678'[-1::-1]:
-                s += row + '\t\t'
+                s += row + ' '
                 for column in 'abcdefgh':
                     if row + column in self.squares:
-                        s += self.squares[row + column].getName() + '\t'
+                        s += ' ' + self.squares[row + column].getName()
                     else:
-                        s += '####\t'
+                        s += ' #'
                 s += '\n'
             print(s)
