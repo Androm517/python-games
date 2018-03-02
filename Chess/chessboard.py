@@ -44,15 +44,18 @@ class Chessboard:
             return move_from[-1::-1], move_to[-1::-1]
         return None, None
 
+    def __str__(self):
+        s = '   A B C D E F G H \n'
+        for row in '12345678'[-1::-1]:
+            s += row + ' '
+            for column in 'abcdefgh':
+                if row + column in self.squares:
+                    s += ' ' + self.squares[row + column].getName()
+                else:
+                    s += ' #'
+            s += '\n'
+        return s
+
     def print(self, message):
         if message == 'print':
-            s = '   A B C D E F G H \n'
-            for row in '12345678'[-1::-1]:
-                s += row + ' '
-                for column in 'abcdefgh':
-                    if row + column in self.squares:
-                        s += ' ' + self.squares[row + column].getName()
-                    else:
-                        s += ' #'
-                s += '\n'
-            print(s)
+            print(self)
