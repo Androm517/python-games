@@ -4,11 +4,8 @@ classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
 
 
 class Piece:
-    def __init__(self, name, position, color):
+    def __init__(self, position, color):
         self.position = position
-        self.name = name
-        if color is not None:
-            self.name = color + self.name[1:]
         self.color = color
 
     def getPosition(self):
@@ -17,13 +14,14 @@ class Piece:
     def setPosition(self, position):
         self.position = position
 
+    # To be overridden by actual pieces
     def getName(self):
-        return self.name
+        raise NotImplemented()
 
 
 class Pawn(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' P  ', position, color)
+        super().__init__(position, color)
 
     def possibleMoves(self, move_from):
         i, j = move_from
@@ -38,7 +36,7 @@ class Pawn(Piece):
 
 class Rook(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' R  ', position, color)
+        super().__init__(position, color)
 
     def getName(self):
         if self.color == '+':
@@ -48,7 +46,7 @@ class Rook(Piece):
 
 class Knight(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' Kn ', position, color)
+        super().__init__(position, color)
 
     def getName(self):
         if self.color == '+':
@@ -58,7 +56,7 @@ class Knight(Piece):
 
 class Bishop(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' B  ', position, color)
+        super().__init__(position, color)
 
     def getName(self):
         if self.color == '+':
@@ -68,7 +66,7 @@ class Bishop(Piece):
 
 class Queen(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' Q  ', position, color)
+        super().__init__(position, color)
 
     def getName(self):
         if self.color == '+':
@@ -78,7 +76,7 @@ class Queen(Piece):
 
 class King(Piece):
     def __init__(self, position='a1', color='#'):
-        super().__init__(' \u2654  ', position, color)
+        super().__init__(position, color)
 
     def getName(self):
         if self.color == '+':

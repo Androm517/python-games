@@ -31,6 +31,7 @@ class Chessboard:
         self.print(message)
 
     def movePiece(self, message):
+        print(message)
         move_from, move_to = self.parseMoveMessage(message)
         if move_from is not None:
             chess_piece = self.squares[move_from]
