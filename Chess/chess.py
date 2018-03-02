@@ -1,7 +1,6 @@
 """
 Program: Chess
 av: Olof Svedvall
-email: svedvall@gmail.com
 version 0.3
 """
 from chessboard import Chessboard
