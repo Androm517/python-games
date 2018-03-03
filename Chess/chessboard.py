@@ -60,6 +60,8 @@ class Chessboard:
         possible_moves = piece.possibleMoves()
         if target not in possible_moves:
             raise ImpossibleMoveException(target)
+        if self.isTargetBlocked(target, piece):
+            raise ImpossibleMoveException(target)
 
     def isTargetBlocked(self, target, piece):
         if self.isTargetSameColor(target, piece) or self.isTargetObstructed(target, piece):
