@@ -39,7 +39,7 @@ class Server:
     def makeMove(self, player, at, to):
         at = nbr_repr(at)
         to = nbr_repr(to)
-        self.board.movePiece(player.color, at, to)
+        print(self.board.movePiece(player.color, at, to))
         return self.board
 
     def give_up(self, player):
