@@ -61,6 +61,26 @@ class Chessboard:
         if target not in possible_moves:
             raise ImpossibleMoveException(target)
 
+    def isTargetBlocked(self, target):
+
+    def isTargetSameColor(self, target, piece):
+        active_color = piece.color
+        target_color = None
+        if active_color == WHITE:
+            for passive_piece in self.whitePieces:
+                if passive_piece.getPosition() == target:
+                    if passive_piece.color == active_color:
+                        return True
+        else:
+            for passive_piece in self.blackPieces:
+                if passive_piece.getPosition() == target:
+                    if passive_piece.color == active_color:
+                        return True
+        return False
+
+    def isTargetObstructed(self, target, piece):
+        return piece.isObstructed(target, self.whitePieces + self.blackPieces)
+
     def __str__(self):
         s = '   A B C D E F G H \n'
         for row in '12345678'[-1::-1]:
