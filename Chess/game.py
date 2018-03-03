@@ -6,6 +6,7 @@ import random
 from chessboard import Chessboard
 from piece import BLACK, WHITE, COLORS
 from player import Player
+from utils import nbr_repr
 
 BIND_IP = '0.0.0.0'
 BIND_PORT = 9999
@@ -36,8 +37,8 @@ class Server:
         }
 
     def makeMove(self, player, at, to):
-        at = (ord(at[1]) - ord('1'), ord(at[0]) - ord('a'))
-        to = (ord(to[1]) - ord('1'), ord(to[0]) - ord('a'))
+        at = nbr_repr(at)
+        to = nbr_repr(to)
         print(self.board.movePiece(player.color, at, to))
         return self.board
 
