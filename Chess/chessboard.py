@@ -49,9 +49,8 @@ class Chessboard:
                 break
         else:
             raise PieceNotFoundException()
-
         try:
-            self.validateMove(piece, target)
+            self.validateMove(target, piece)
             piece.setPosition(target)
         except Exception as e:
             return str(e)
@@ -59,9 +58,9 @@ class Chessboard:
     def validateMove(self, target, piece):
         possible_moves = piece.possibleMoves()
         if target not in possible_moves:
-            raise ImpossibleMoveException(target)
+            raise ImpossibleMoveException(f"Exception: Impossible move {target}. Not in possible_moves")
         if self.isTargetBlocked(target, piece):
-            raise ImpossibleMoveException(target)
+            raise ImpossibleMoveException(f"Exception: Impossible move {target}. TargetBlocked.")
 
     def isTargetBlocked(self, target, piece):
         if self.isTargetSameColor(target, piece) or self.isTargetObstructed(target, piece):
@@ -92,7 +91,7 @@ class Chessboard:
         pieces = self.whitePieces + self.blackPieces
         for row in reversed(range(0,8)):
             s += str(row) + ' '
-            for column in reversed(range(0,8)):
+            for column in range(0,8):
                 for piece in pieces:
                     if (row, column) == piece.getPosition():
                         s += ' ' + piece.getName()

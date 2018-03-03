@@ -22,12 +22,14 @@ class Piece:
             raise ValueError('{} is not a valid position'.format(position))
 
         self.position = position
+        self.firstMove = True
 
     def getPosition(self):
         return self.position
 
     def setPosition(self, position):
         self.position = position
+        self.firstMove = False
 
     # To be overridden by actual pieces
     def getName(self):
@@ -40,11 +42,27 @@ class Pawn(Piece):
 
     def possibleMoves(self):
         i, j = self.position
-        possible_moves = [(i + 1, j - 1), (i + 1, j), (i + 1, j + 1)]
+        if self.color == WHITE:
+            possible_moves = [(i + 1, j - 1), (i + 1, j), (i + 1, j + 1)]
+            if self.firstMove:
+                possible_moves.append((i + 2, j))
+        else:
+            possible_moves = [(i - 1, j - 1), (i - 1, j), (i - 1, j + 1)]
+            if self.firstMove:
+                possible_moves.append((i - 2, j))
         return possible_moves
 
     def isObstructed(self, target, pieces):
-        return False
+        if self.getPosition()[1] == target[1]:
+            for piece in pieces:
+                if piece.getPosition() == target:
+                    return True
+            return False
+        else:
+            for piece in pieces:
+                if piece.getPosition() == target:
+                    return False
+        return True
 
     def getName(self):
         if self.color == BLACK:
