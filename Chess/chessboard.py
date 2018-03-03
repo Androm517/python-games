@@ -18,7 +18,7 @@ class Chessboard:
         self.blackPieces = []
         self.whitePieces = []
 
-        self.setup_initial_position()
+        self.setupInitialPosition()
 
     def setupInitialPosition(self):
         self.whitePieces += [Pawn(col + '2', WHITE) for col in 'abcdefgh']

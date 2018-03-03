@@ -14,7 +14,7 @@ def readerTask(sock):
         r = sock.recv(4096)
         if not r:
             break
-        print(r)
+        print(r.decode('utf-8'))
     sys.exit(-1)
 
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            message = input('>>> ')
+            message = input('')
             if message == 'q':
                 break
             sock.send(bytes(message, 'utf-8'))

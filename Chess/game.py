@@ -1,11 +1,22 @@
 import socket
 import threading
 import logging
+import random
 
 from chessboard import Chessboard
+from piece import BLACK, WHITE, COLORS
+from player import Player
 
 BIND_IP = '0.0.0.0'
 BIND_PORT = 9999
+
+
+class UnknownCommand(Exception):
+    def __init__(self, cmd):
+        self.cmd = cmd
+
+    def __str__(self):
+        return 'Unknown command: {}'.format(self.cmd)
 
 
 class Server:
@@ -13,11 +24,56 @@ class Server:
         self.players = []
         self.boardLock = threading.Lock()
         self.board = Chessboard()
+        self.started = False
+
+        self.commands = {
+            'move': self.makeMove,
+            'surrender': self.give_up,
+            'yield': self.give_up,
+            'castle': self.castle,
+            'say': self.say
+        }
+
+    def makeMove(self, player, at, to):
+        raise NotImplemented()
+
+    def give_up(self, player):
+        raise NotImplemented()
+
+    def castle(self, player, where):
+        raise NotImplemented()
+
+    def say(self, player, *msg):
+        raise NotImplemented()
+
+    def handle_message(self, player, message):
+        try:
+            with self.boardLock:
+                response = self.execute_command(player, *message.split())
+        except Exception as e:
+            logging.exception(e)
+            response = str(e)
+        return response
+
+    def execute_command(self, player, *args):
+        if not args:
+            raise RuntimeError('no args provided...')
+
+        command = args[0]
+
+        if len(command) > 1:
+            params = args[1:]
+        else:
+            params = ()     # empty tuple
+
+        f = self.commands.get(command.lower())
+        if not f:
+            raise UnknownCommand(command)
+
+        return f(player, *params)
 
     # start server and stuff... as someone connects add a player to the list of players
     def run(self):
-        sockets = []
-
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind((BIND_IP, BIND_PORT))
@@ -25,37 +81,50 @@ class Server:
 
         print('Listening on {}:{}'.format(BIND_IP, BIND_PORT))
 
-        def handle_client_connection(client_socket):
-            while True:
-                try:
-                    message = client_socket.recv(4096).decode('utf-8')
-                    if not message:
-                        break
-                    with self.boardLock:
-                        response = self.board.getMessage(message)
-                    client_socket.send(bytes(str(response), 'utf-8'))
-
-                except Exception as e:
-                    logging.exception(e)
-
         while True:
             try:
                 client_sock, address = server.accept()
                 print('Accepted connection from {}:{}'.format(address[0], address[1]))
-                sockets.append(client_sock)
+
+                if len(self.players) == 2:
+                    client_sock.close()
+                    continue
+
+                def handle_client_connection(player):
+                    while True:
+                        try:
+                            message = player.socket.recv(4096).decode('utf-8')
+                            if not message:
+                                break
+                            response = self.handle_message(player, message)
+                            player.tell(response)
+
+                        except Exception as e:
+                            logging.exception(e)
+
+                if self.players:
+                    player = Player(WHITE if self.players[0].color == BLACK else BLACK, client_sock)
+                    self.players[0].tell('another player connected, the game can start!')
+                else:
+                    player = Player(random.choice(COLORS), client_sock)
+                player.tell('Welcome to the game! You are {}.'.format(player.color))
+                self.players.append(player)
+
                 client_handler = threading.Thread(
                     target=handle_client_connection,
-                    args=(client_sock,)  # without comma you'd get a... TypeError: handle_client_connection() argument after * must be a sequence, not _socketobject
+                    args=(player,)  # without comma you'd get a... TypeError: handle_client_connection() argument after * must be a sequence, not _socketobject
                 )
                 client_handler.daemon = True
                 client_handler.start()
 
+                if len(self.players) == 2:
+                    self.game_started = True
+
             except KeyboardInterrupt:
                 break
 
-        for s in sockets:
-            s.close()
-            break
+        for p in self.players:
+            p.disconnect()
 
         server.close()
 
