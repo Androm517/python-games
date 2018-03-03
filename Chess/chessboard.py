@@ -94,7 +94,7 @@ class Chessboard:
             s += str(row) + ' '
             for column in range(0,8):
                 for piece in pieces:
-                    if (row, column) == piece.getPosition()
+                    if (row, column) == piece.getPosition():
                         s += ' ' + piece.getName()
                         break
                 else:
