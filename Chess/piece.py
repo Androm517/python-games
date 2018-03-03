@@ -48,6 +48,14 @@ class Pawn(Piece):
             return '\u265F'
         return '\u2659'
 
+    def removeMoves(self, possible_moves):
+        remove_moves = []
+        for move in possible_moves:
+            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
+                remove_moves.append(move)
+        for move in remove_moves:
+            possible_moves.remove(move)
+
 
 class Rook(Piece):
     def __init__(self, position, color):
@@ -76,12 +84,8 @@ class Knight(Piece):
         possible_moves.extend([(i + k, j + 1) for k in range(-2, 3, 4)])
         possible_moves.extend([(i + 1, j + k) for k in range(-2, 3, 4)])
         possible_moves.extend([(i - 1, j + k) for k in range(-2, 3, 4)])
-        remove_moves = []
-        for move in possible_moves:
-            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
-                remove_moves.append(move)
-        for move in remove_moves:
-            possible_moves.remove(move)
+        possible_moves.remove((i, j))
+        self.removeMoves(possible_moves)
         return possible_moves
 
     def getName(self):
@@ -95,7 +99,17 @@ class Bishop(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        pass
+        i, j = self.position
+        relative_i, relative_j = i - 8, j - 8
+        possible_moves = []
+        for k in range(16):
+            possible_moves.append((relative_i + k, relative_j + k))
+        relative_i, relative_j = i - 8, j + 8
+        for k in range(16):
+            possible_moves.append((relative_i + k, relative_j - k))
+        possible_moves.remove((i, j))
+        self.removeMoves(possible_moves)
+        return possible_moves
 
     def getName(self):
         if self.color == WHITE:
@@ -107,6 +121,21 @@ class Queen(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
 
+    def possibleMoves(self):
+        i, j = self.position
+        possible_moves = [(i, k) for k in range(0, 8)]
+        possible_moves.extend([(k, j) for k in range(0, 8)])
+        possible_moves.remove((i, j))
+        relative_i, relative_j = i - 8, j - 8
+        for k in range(16):
+            possible_moves.append((relative_i + k, relative_j + k))
+        relative_i, relative_j = i - 8, j + 8
+        for k in range(16):
+            possible_moves.append((relative_i + k, relative_j - k))
+        possible_moves.remove((i, j))
+        self.removeMoves(possible_moves)
+        return possible_moves
+
     def getName(self):
         if self.color == WHITE:
             return '\u265B'
@@ -116,6 +145,15 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
+
+    def possibleMoves(self):
+        i, j = self.position
+        possible_moves = [(i + 1, j + k) for k in range(-1,2)]
+        possible_moves.extend((i, j + k) for k in range(-1,2)])
+        possible_moves.extend([(i - 1, j + k) for k in range(-1, 2)])
+        possible_moves.remove((i, j))
+        self.removeMoves(possible_moves)
+        return possible_moves
 
     def getName(self):
         if self.color == WHITE:
