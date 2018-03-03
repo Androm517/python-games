@@ -89,11 +89,14 @@ class Chessboard:
 
     def __str__(self):
         s = '   A B C D E F G H \n'
-        for row in '12345678'[-1::-1]:
-            s += row + ' '
-            for column in 'abcdefgh':
-                if row + column in self.squares:
-                    s += ' ' + self.squares[row + column].getName()
+        pieces = self.whitePieces + self.blackPieces
+        for row in range(0,8):
+            s += str(row) + ' '
+            for column in range(0,8):
+                for piece in pieces:
+                    if (row, column) == piece.getPosition()
+                        s += ' ' + piece.getName()
+                        break
                 else:
                     s += ' #'
             s += '\n'
