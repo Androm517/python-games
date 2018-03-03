@@ -1,48 +1,65 @@
 """
 class: Chessboard
 """
-from piece import Pawn, Rook, Knight, Bishop, Queen, King
+from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
+
+
+class PieceNotFoundException(Exception):
+    pass
+
+
+class ImpossibleMoveException(Exception):
+    pass
 
 
 class Chessboard:
     def __init__(self):
         self.squares = {}
-        for row in '12345678':
-            if row in '12':
-                color ='+'
-            else:
-                color = '-'
-            for column in 'abcdefgh':
-                if row in '27':
-                    self.squares[row + column] = Pawn(row + column, color)
-                elif row in '18' and column in 'ah':
-                    self.squares[row + column] = Rook(row + column, color)
-                elif row in '18' and column in 'bg':
-                    self.squares[row + column] = Knight(row + column, color)
-                elif row in '18' and column in 'cf':
-                    self.squares[row + column] = Bishop(row + column, color)
-                elif row in '18' and column in 'd':
-                    self.squares[row + column] = Queen(row + column, color)
-                elif row in '18' and column in 'e':
-                    self.squares[row + column] = King(row + column, color)
+        self.blackPieces = []
+        self.whitePieces = []
 
-    def getMessage(self, message):
-        self.movePiece(message)
-        self.print(message)
+        self.setup_initial_position()
 
-    def movePiece(self, message):
-        print(message)
-        move_from, move_to = self.parseMoveMessage(message)
-        if move_from is not None:
-            chess_piece = self.squares[move_from]
-            del self.squares[move_from]
-            self.squares[move_to] = chess_piece
+    def setupInitialPosition(self):
+        self.whitePieces += [Pawn(col + '2', WHITE) for col in 'abcdefgh']
+        self.whitePieces.append(Rook('a' + '1', WHITE))
+        self.whitePieces.append(Knight('b' + '1', WHITE))
+        self.whitePieces.append(Bishop('c' + '1', WHITE))
+        self.whitePieces.append(Queen('d' + '1', WHITE))
+        self.whitePieces.append(King('e' + '1', WHITE))
+        self.whitePieces.append(Bishop('f' + '1', WHITE))
+        self.whitePieces.append(Knight('g' + '1', WHITE))
+        self.whitePieces.append(Rook('h' + '1', WHITE))
 
-    def parseMoveMessage(self, message):
-        if ' ' in message:
-            move_from, move_to = message.split(' ')
-            return move_from[-1::-1], move_to[-1::-1]
-        return None, None
+        self.blackPieces += [Pawn(col + '7', BLACK) for col in 'abcdefgh']
+        self.blackPieces.append(Rook('a' + '8', BLACK))
+        self.blackPieces.append(Knight('b' + '8', BLACK))
+        self.blackPieces.append(Bishop('c' + '8', BLACK))
+        self.blackPieces.append(Queen('d' + '8', BLACK))
+        self.blackPieces.append(King('e' + '8', BLACK))
+        self.blackPieces.append(Bishop('f' + '8', BLACK))
+        self.blackPieces.append(Knight('g' + '8', BLACK))
+        self.blackPieces.append(Rook('h' + '8', BLACK))
+
+    def movePiece(self, color, start, target):
+        pieces = self.whitePieces if color == WHITE else self.blackPieces
+        for p in pieces:
+            if p.position == start:
+                piece = p
+                break
+        else:
+            raise PieceNotFoundException()
+
+        try:
+            self.validateMove(piece, target)
+            piece.setPosition(target)
+        except Exception as e:
+            return str(e)
+
+    def validateMove(self, piece, target):
+        possible_moves = piece.possibleMoves()
+        if target not in possible_moves:
+            raise ImpossibleMoveException(target)
 
     def __str__(self):
         s = '   A B C D E F G H \n'
@@ -55,7 +72,3 @@ class Chessboard:
                     s += ' #'
             s += '\n'
         return s
-
-    def print(self, message):
-        if message == 'print':
-            print(self)
