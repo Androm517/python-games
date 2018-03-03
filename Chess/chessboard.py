@@ -85,16 +85,10 @@ class Chessboard:
 
     def isTargetSameColor(self, target, piece):
         active_color = piece.color
-        if active_color == WHITE:
-            for passive_piece in self.whitePieces:
-                if passive_piece.getPosition() == target:
-                    if passive_piece.color == active_color:
-                        return True
-        else:
-            for passive_piece in self.blackPieces:
-                if passive_piece.getPosition() == target:
-                    if passive_piece.color == active_color:
-                        return True
+        pieces = self.whitePieces if active_color == WHITE else self.blackPieces
+        for passive_piece in pieces:
+            if passive_piece.getPosition() == target and passive_piece.color == active_color:
+                return True
         return False
 
     def isTargetObstructed(self, target, piece):
@@ -105,7 +99,6 @@ class Chessboard:
         s = '   A B C D E F G H \n'
         for row in reversed(range(0, 8)):
             s += chr(ord('1') + row) + ' '
-            for column in range(0, 8):
-                s += ' ' + squares.get((column, row), '#')
+            s += ' '.join(squares.get((column, row), '#') for column in range(0, 8))
             s += '\n'
         return s

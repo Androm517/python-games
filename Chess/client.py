@@ -23,7 +23,6 @@ if __name__ == '__main__':
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # connect the socket
-    # sock.connect((target, port))
     try:
         sock.connect(('127.0.0.1', 9999))
     except OSError as e:
