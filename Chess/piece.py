@@ -277,7 +277,7 @@ class King(Piece):
     def possibleMoves(self):
         i, j = self.position
         possible_moves = [(i + 1, j + k) for k in range(-1,2)]
-        possible_moves.extend((i, j + k) for k in range(-1,2)])
+        possible_moves.extend([(i, j + k) for k in range(-1,2)])
         possible_moves.extend([(i - 1, j + k) for k in range(-1, 2)])
         possible_moves.remove((i, j))
         self.removeMoves(possible_moves)
