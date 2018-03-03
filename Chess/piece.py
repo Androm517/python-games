@@ -83,8 +83,6 @@ class Pawn(Piece):
         return '\u2659'
 
 
-
-
 class Rook(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
