@@ -73,9 +73,9 @@ class Knight(Piece):
     def possibleMoves(self):
         i, j = self.position
         possible_moves = [(i + k, j - 1) for k in range(-2, 3, 4)]
-        possible_moves = [(i + k, j + 1) for k in range(-2, 3, 4)]
-        possible_moves = [(i + 1, j + k) for k in range(-2, 3, 4)]
-        possible_moves = [(i - 1, j + k) for k in range(-2, 3, 4)]
+        possible_moves.extend([(i + k, j + 1) for k in range(-2, 3, 4)])
+        possible_moves.extend([(i + 1, j + k) for k in range(-2, 3, 4)])
+        possible_moves.extend([(i - 1, j + k) for k in range(-2, 3, 4)])
         remove_moves = []
         for move in possible_moves:
             if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
@@ -95,18 +95,7 @@ class Bishop(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i + k, j - 1) for k in range(-2, 3, 4)]
-        possible_moves.extend([(i + k, j + 1) for k in range(-2, 3, 4)])
-        possible_moves.extend([(i + 1, j + k) for k in range(-2, 3, 4)])
-        possible_moves.extend([(i - 1, j + k) for k in range(-2, 3, 4)])
-        remove_moves = []
-        for move in possible_moves:
-            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
-                remove_moves.append(move)
-        for move in remove_moves:
-            possible_moves.remove(move)
-        return possible_moves
+        pass
 
     def getName(self):
         if self.color == WHITE:
