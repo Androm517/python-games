@@ -35,7 +35,10 @@ class Server:
         }
 
     def makeMove(self, player, at, to):
-        raise NotImplemented()
+        at = (ord(at[0]) - ord('a'), ord(at[1]) - ord('1'))
+        to = (ord(to[0]) - ord('a'), ord(to[1]) - ord('1'))
+        self.board.movePiece(player.color, at, to)
+        return self.board
 
     def give_up(self, player):
         raise NotImplemented()
@@ -52,8 +55,8 @@ class Server:
                 response = self.execute_command(player, *message.split())
         except Exception as e:
             logging.exception(e)
-            response = str(e)
-        return response
+            response = e
+        return str(response)
 
     def execute_command(self, player, *args):
         if not args:
