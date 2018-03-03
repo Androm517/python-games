@@ -56,7 +56,6 @@ class Server:
             with self.boardLock:
                 response = self.execute_command(player, *message.split())
         except Exception as e:
-            logging.exception(e)
             response = e
         return str(response)
 
@@ -106,6 +105,7 @@ class Server:
 
                         except Exception as e:
                             logging.exception(e)
+                            pass
 
                 if self.players:
                     player = Player(WHITE if self.players[0].color == BLACK else BLACK, client_sock)

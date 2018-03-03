@@ -7,13 +7,21 @@ from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
 from utils import str_repr, nbr_repr
 
 
+class NotYourTurnException(Exception):
+    def __init__(self, color):
+        self.color = color
+
+    def __str__(self):
+        return 'not your turn, {}!'.format(self.color)
+
+
 class PieceNotFoundException(Exception):
     def __init__(self, player, position):
         self.player = player
         self.position = position
 
     def __str__(self):
-        return 'no {} found at {}}'
+        return 'no {} piece found at {}'.format(self.player, str_repr(self.position))
 
 
 class ImpossibleMoveException(Exception):
@@ -30,6 +38,8 @@ class Chessboard:
         self.squares = {}
         self.blackPieces = []
         self.whitePieces = []
+        self.currentPlayer = WHITE
+        self.winner = None
 
         self.setupInitialPosition()
 
@@ -55,18 +65,30 @@ class Chessboard:
         self.blackPieces.append(Rook('h' + '8', BLACK))
 
     def movePiece(self, color, start, target):
-        pieces = self.whitePieces if color == WHITE else self.blackPieces
+        if color != self.currentPlayer:
+            raise NotYourTurnException(color)
+
+        pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (self.blackPieces, self.whitePieces)
+
         for p in pieces:
             if p.position == start:
                 piece = p
                 break
         else:
             raise PieceNotFoundException()
+
         try:
             self.validateMove(target, piece)
+            # remove taken pieces (if any)
+            for p, i in enumerate(passive):
+                if p.position == target:
+                    passive.pop(i)
+                    break
             piece.setPosition(target)
+            self.currentPlayer = BLACK if self.currentPlayer == WHITE else BLACK
         except Exception as e:
             return str(e)
+
         return "Move OK!"
 
     def validateMove(self, target, piece):
