@@ -56,12 +56,16 @@ class Chessboard:
         except Exception as e:
             return str(e)
 
-    def validateMove(self, piece, target):
+    def validateMove(self, target, piece):
         possible_moves = piece.possibleMoves()
         if target not in possible_moves:
             raise ImpossibleMoveException(target)
 
-    def isTargetBlocked(self, target):
+    def isTargetBlocked(self, target, piece):
+        if self.isTargetSameColor(target, piece) or self.isTargetObstructed(target, piece):
+            return True
+        else:
+            return False
 
     def isTargetSameColor(self, target, piece):
         active_color = piece.color
