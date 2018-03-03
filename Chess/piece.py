@@ -43,6 +43,9 @@ class Pawn(Piece):
         possible_moves = [(i + 1, j - 1), (i + 1, j), (i + 1, j + 1)]
         return possible_moves
 
+    def isObstructed(self, target, pieces):
+        return False
+
     def getName(self):
         if self.color == WHITE:
             return '\u265F'
@@ -60,6 +63,36 @@ class Pawn(Piece):
 class Rook(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
+
+    def isObstructed(self, target, pieces):
+        i, j = self.position
+        end_i, end_j = target
+        direction = (end_i - i, end_j, j)
+        if direction[0] > 0 and direction[1] == 0:
+            while (i, j) != target:
+                i += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] == 0 and direction[1] > 0:
+            while (i, j) != target:
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] == 0:
+            while (i, j) != target:
+                i -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        else:
+            while (i, j) != target:
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        return False
 
     def possibleMoves(self):
         i, j = self.position
@@ -88,6 +121,9 @@ class Knight(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
+    def isObstructed(self, target, pieces):
+        return False
+
     def getName(self):
         if self.color == WHITE:
             return '\u265E'
@@ -110,6 +146,40 @@ class Bishop(Piece):
         possible_moves.remove((i, j))
         self.removeMoves(possible_moves)
         return possible_moves
+
+    def isObstructed(self, target, pieces):
+        i, j = self.position
+        end_i, end_j = target
+        direction = (end_i - i, end_j, j)
+        if direction[0] > 0 and direction[1] > 0:
+            while (i, j) != target:
+                i += 1
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] > 0:
+            while (i, j) != target:
+                i -= 1
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] < 0:
+            while (i, j) != target:
+                i -= 1
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        else:
+            while (i, j) != target:
+                i += 1
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        return False
 
     def getName(self):
         if self.color == WHITE:
@@ -136,6 +206,64 @@ class Queen(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
+    def isObstructed(self, target, pieces):
+        i, j = self.position
+        end_i, end_j = target
+        direction = (end_i - i, end_j, j)
+        if direction[0] > 0 and direction[1] == 0:
+            while (i, j) != target:
+                i += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] == 0 and direction[1] > 0:
+            while (i, j) != target:
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] == 0:
+            while (i, j) != target:
+                i -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] == 0 and direction[1] < 0:
+            while (i, j) != target:
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] > 0 and direction[1] > 0:
+            while (i, j) != target:
+                i += 1
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] > 0:
+            while (i, j) != target:
+                i -= 1
+                j += 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        elif direction[0] < 0 and direction[1] < 0:
+            while (i, j) != target:
+                i -= 1
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        else:
+            while (i, j) != target:
+                i += 1
+                j -= 1
+                for piece in pieces:
+                    if piece.getPosition() == (i, j):
+                        return True
+        return False
+
     def getName(self):
         if self.color == WHITE:
             return '\u265B'
@@ -154,6 +282,9 @@ class King(Piece):
         possible_moves.remove((i, j))
         self.removeMoves(possible_moves)
         return possible_moves
+
+    def isObstructed(self):
+        return False
 
     def getName(self):
         if self.color == WHITE:
