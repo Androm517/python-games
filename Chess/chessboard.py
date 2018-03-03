@@ -90,9 +90,9 @@ class Chessboard:
     def __str__(self):
         s = '   A B C D E F G H \n'
         pieces = self.whitePieces + self.blackPieces
-        for row in range(0,8):
+        for row in reversed(range(0,8)):
             s += str(row) + ' '
-            for column in range(0,8):
+            for column in reversed(range(0,8)):
                 for piece in pieces:
                     if (row, column) == piece.getPosition():
                         s += ' ' + piece.getName()

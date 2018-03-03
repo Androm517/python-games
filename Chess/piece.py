@@ -17,7 +17,7 @@ class Piece:
         if isinstance(position, str):
             if len(position) != 2:
                 raise ValueError('{} is not a valid position'.format(position))
-            position = (ord(position[0]) - ord('a'), ord(position[1]) - ord('1'))
+            position = ( ord(position[1]) - ord('1'), ord(position[0]) - ord('a'))
         if position[0] > 7 or position[0] < 0 or position[1] > 7 or position[1] < 0:
             raise ValueError('{} is not a valid position'.format(position))
 
@@ -47,7 +47,7 @@ class Pawn(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265F'
         return '\u2659'
 
@@ -102,7 +102,7 @@ class Rook(Piece):
         return possible_moves
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265C'
         return '\u2656'
 
@@ -125,7 +125,7 @@ class Knight(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265E'
         return '\u2658'
 
@@ -182,7 +182,7 @@ class Bishop(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265D'
         return '\u2657'
 
@@ -265,7 +265,7 @@ class Queen(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265B'
         return '\u2655'
 
@@ -287,6 +287,6 @@ class King(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265A'
         return '\u2654'
