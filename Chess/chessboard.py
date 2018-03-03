@@ -22,7 +22,7 @@ class ImpossibleMoveException(Exception):
         self.target = target
 
     def __str__(self):
-        return 'Impossible move: {} {}'.format(self.piece, )
+        return 'Impossible move: {} {}'.format(self.piece, str_repr(self.target))
 
 
 class Chessboard:

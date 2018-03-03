@@ -33,6 +33,14 @@ class Piece:
         self.position = position
         self.firstMove = False
 
+    def removeMoves(self, possible_moves):
+        remove_moves = []
+        for move in possible_moves:
+            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
+                remove_moves.append(move)
+        for move in remove_moves:
+            possible_moves.remove(move)
+
     # To be overridden by actual pieces
     def getName(self):
         raise NotImplemented()
@@ -70,17 +78,11 @@ class Pawn(Piece):
         return True
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265F'
         return '\u2659'
 
-    def removeMoves(self, possible_moves):
-        remove_moves = []
-        for move in possible_moves:
-            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
-                remove_moves.append(move)
-        for move in remove_moves:
-            possible_moves.remove(move)
+
 
 
 class Rook(Piece):
@@ -125,7 +127,7 @@ class Rook(Piece):
         return possible_moves
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265C'
         return '\u2656'
 
@@ -148,7 +150,7 @@ class Knight(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265E'
         return '\u2658'
 
@@ -205,7 +207,7 @@ class Bishop(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265D'
         return '\u2657'
 
@@ -288,7 +290,7 @@ class Queen(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265B'
         return '\u2655'
 
@@ -310,6 +312,6 @@ class King(Piece):
         return False
 
     def getName(self):
-        if self.color == WHITE:
+        if self.color == BLACK:
             return '\u265A'
         return '\u2654'
