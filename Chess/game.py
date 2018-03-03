@@ -36,9 +36,9 @@ class Server:
         }
 
     def makeMove(self, player, at, to):
-        at = (ord(at[0]) - ord('a'), ord(at[1]) - ord('1'))
-        to = (ord(to[0]) - ord('a'), ord(to[1]) - ord('1'))
-        self.board.movePiece(player.color, at, to)
+        at = (ord(at[1]) - ord('1'), ord(at[0]) - ord('a'))
+        to = (ord(to[1]) - ord('1'), ord(to[0]) - ord('a'))
+        print(self.board.movePiece(player.color, at, to))
         return self.board
 
     def give_up(self, player):

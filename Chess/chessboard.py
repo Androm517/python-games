@@ -48,8 +48,8 @@ class Chessboard:
         self.blackPieces.append(Rook('a' + '8', BLACK))
         self.blackPieces.append(Knight('b' + '8', BLACK))
         self.blackPieces.append(Bishop('c' + '8', BLACK))
-        self.blackPieces.append(King('d' + '8', BLACK))
-        self.blackPieces.append(Queen('e' + '8', BLACK))
+        self.blackPieces.append(King('e' + '8', BLACK))
+        self.blackPieces.append(Queen('d' + '8', BLACK))
         self.blackPieces.append(Bishop('f' + '8', BLACK))
         self.blackPieces.append(Knight('g' + '8', BLACK))
         self.blackPieces.append(Rook('h' + '8', BLACK))
@@ -67,6 +67,7 @@ class Chessboard:
             piece.setPosition(target)
         except Exception as e:
             return str(e)
+        return "Move OK!"
 
     def validateMove(self, target, piece):
         possible_moves = piece.possibleMoves()
@@ -106,6 +107,6 @@ class Chessboard:
         for row in reversed(range(0, 8)):
             s += chr(ord('1') + row) + ' '
             for column in range(0, 8):
-                s += ' ' + squares.get((column, row), '#')
+                s += ' ' + squares.get(( row, column), '#')
             s += '\n'
         return s
