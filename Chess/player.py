@@ -17,5 +17,5 @@ class Player:
 
     def disconnect(self):
         with self.socket_lock:
-            self.socket.send('you have been disconnected from game...')
+            self.socket.send(bytes('you have been disconnected from game...', 'utf-8'))
         self.socket.close()

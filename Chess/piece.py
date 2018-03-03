@@ -1,6 +1,7 @@
 """
 classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
 """
+from utils import str_repr, nbr_repr
 
 
 BLACK = 'black'
@@ -17,7 +18,8 @@ class Piece:
         if isinstance(position, str):
             if len(position) != 2:
                 raise ValueError('{} is not a valid position'.format(position))
-            position = ( ord(position[1]) - ord('1'), ord(position[0]) - ord('a'))
+            position = nbr_repr(position)
+
         if position[0] > 7 or position[0] < 0 or position[1] > 7 or position[1] < 0:
             raise ValueError('{} is not a valid position'.format(position))
 
@@ -33,21 +35,32 @@ class Piece:
     def getName(self):
         raise NotImplemented()
 
+    def __str__(self):
+        return self.getName() + str_repr(self.position)
+
 
 class Pawn(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i + 1, j - 1), (i + 1, j), (i + 1, j + 1)]
+        col, row = self.position
+        if self.color == WHITE:
+            possible_moves = [(col, row + 1)]
+            if row == 1:
+                possible_moves.append((col, row + 2))
+        else:
+            possible_moves = [(col, row - 1)]
+            if row == 6:
+                possible_moves.append((col, row - 2))
+
         return possible_moves
 
     def isObstructed(self, target, pieces):
         return False
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265F'
         return '\u2659'
 
@@ -102,7 +115,7 @@ class Rook(Piece):
         return possible_moves
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265C'
         return '\u2656'
 
@@ -125,7 +138,7 @@ class Knight(Piece):
         return False
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265E'
         return '\u2658'
 
@@ -182,7 +195,7 @@ class Bishop(Piece):
         return False
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265D'
         return '\u2657'
 
@@ -265,7 +278,7 @@ class Queen(Piece):
         return False
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265B'
         return '\u2655'
 
@@ -287,6 +300,6 @@ class King(Piece):
         return False
 
     def getName(self):
-        if self.color == BLACK:
+        if self.color == WHITE:
             return '\u265A'
         return '\u2654'

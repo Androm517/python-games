@@ -31,7 +31,8 @@ class Server:
             'surrender': self.give_up,
             'yield': self.give_up,
             'castle': self.castle,
-            'say': self.say
+            'say': self.say,
+            'print': lambda p: str(self.board)
         }
 
     def makeMove(self, player, at, to):

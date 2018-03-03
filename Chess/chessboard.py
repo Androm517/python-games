@@ -1,15 +1,28 @@
 """
 class: Chessboard
 """
+import itertools
+
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
+from utils import str_repr, nbr_repr
 
 
 class PieceNotFoundException(Exception):
-    pass
+    def __init__(self, player, position):
+        self.player = player
+        self.position = position
+
+    def __str__(self):
+        return 'no {} found at {}}'
 
 
 class ImpossibleMoveException(Exception):
-    pass
+    def __init__(self, piece, target):
+        self.piece = piece
+        self.target = target
+
+    def __str__(self):
+        return 'Impossible move: {} {}'.format(self.piece, )
 
 
 class Chessboard:
@@ -35,8 +48,8 @@ class Chessboard:
         self.blackPieces.append(Rook('a' + '8', BLACK))
         self.blackPieces.append(Knight('b' + '8', BLACK))
         self.blackPieces.append(Bishop('c' + '8', BLACK))
-        self.blackPieces.append(Queen('d' + '8', BLACK))
-        self.blackPieces.append(King('e' + '8', BLACK))
+        self.blackPieces.append(King('d' + '8', BLACK))
+        self.blackPieces.append(Queen('e' + '8', BLACK))
         self.blackPieces.append(Bishop('f' + '8', BLACK))
         self.blackPieces.append(Knight('g' + '8', BLACK))
         self.blackPieces.append(Rook('h' + '8', BLACK))
@@ -50,16 +63,15 @@ class Chessboard:
         else:
             raise PieceNotFoundException()
 
-        try:
-            self.validateMove(piece, target)
-            piece.setPosition(target)
-        except Exception as e:
-            return str(e)
+        self.validateMove(target, piece)
+        piece.setPosition(target)
 
     def validateMove(self, target, piece):
         possible_moves = piece.possibleMoves()
+
         if target not in possible_moves:
             raise ImpossibleMoveException(target)
+
         if self.isTargetBlocked(target, piece):
             raise ImpossibleMoveException(target)
 
@@ -71,7 +83,6 @@ class Chessboard:
 
     def isTargetSameColor(self, target, piece):
         active_color = piece.color
-        target_color = None
         if active_color == WHITE:
             for passive_piece in self.whitePieces:
                 if passive_piece.getPosition() == target:
@@ -88,16 +99,11 @@ class Chessboard:
         return piece.isObstructed(target, self.whitePieces + self.blackPieces)
 
     def __str__(self):
+        squares = {p.position: p.getName() for p in self.whitePieces + self.blackPieces}
         s = '   A B C D E F G H \n'
-        pieces = self.whitePieces + self.blackPieces
-        for row in reversed(range(0,8)):
-            s += str(row) + ' '
-            for column in reversed(range(0,8)):
-                for piece in pieces:
-                    if (row, column) == piece.getPosition():
-                        s += ' ' + piece.getName()
-                        break
-                else:
-                    s += ' #'
+        for row in reversed(range(0, 8)):
+            s += chr(ord('1') + row) + ' '
+            for column in range(0, 8):
+                s += ' ' + squares.get((column, row), '#')
             s += '\n'
         return s
