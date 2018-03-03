@@ -38,6 +38,12 @@ class Chessboard:
             del self.squares[move_from]
             self.squares[move_to] = chess_piece
 
+    def validateMove(self, piece):
+        pos = piece.getPosition()
+        y, x = ord(pos[0]), ord(pos[1])
+        possible_moves = piece.possibleMoves((x, y))
+        return possible_moves
+
     def parseMoveMessage(self, message):
         if ' ' in message:
             move_from, move_to = message.split(' ')
