@@ -80,7 +80,7 @@ class Chessboard:
         try:
             self.validateMove(target, piece)
             # remove taken pieces (if any)
-            for p, i in enumerate(passive):
+            for i, p in enumerate(passive):
                 if p.position == target:
                     passive.pop(i)
                     break
