@@ -24,6 +24,7 @@ if __name__ == '__main__':
 
     # connect the socket
     try:
+        # sock.connect(('192.168.1.192', 9999))
         sock.connect(('127.0.0.1', 9999))
     except OSError as e:
         print('connecting to server failed')

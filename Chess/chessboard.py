@@ -2,35 +2,14 @@
 class: Chessboard
 """
 import itertools
+import logging
 
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
 from utils import str_repr, nbr_repr
+from exceptions import NotYourTurnException, PieceNotFoundException, ImpossibleMoveException
 
 
-class NotYourTurnException(Exception):
-    def __init__(self, color):
-        self.color = color
-
-    def __str__(self):
-        return 'not your turn, {}!'.format(self.color)
-
-
-class PieceNotFoundException(Exception):
-    def __init__(self, player, position):
-        self.player = player
-        self.position = position
-
-    def __str__(self):
-        return 'no {} piece found at {}'.format(self.player, str_repr(self.position))
-
-
-class ImpossibleMoveException(Exception):
-    def __init__(self, piece, target):
-        self.piece = piece
-        self.target = target
-
-    def __str__(self):
-        return 'Impossible move: {} {}'.format(self.piece, str_repr(self.target))
+logger = logging.getLogger(__name__)
 
 
 class Chessboard:
@@ -75,19 +54,17 @@ class Chessboard:
                 piece = p
                 break
         else:
-            raise PieceNotFoundException()
+            raise PieceNotFoundException(color, start)
 
-        try:
-            self.validateMove(target, piece)
-            # remove taken pieces (if any)
-            for p, i in enumerate(passive):
-                if p.position == target:
-                    passive.pop(i)
-                    break
-            piece.setPosition(target)
-            self.currentPlayer = BLACK if self.currentPlayer == WHITE else BLACK
-        except Exception as e:
-            return str(e)
+        self.validateMove(target, piece)
+        # remove taken pieces (if any)
+        for i, p in enumerate(passive):
+            if p.position == target:
+                del passive[i]
+                break
+
+        piece.setPosition(target)
+        self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
 
         return "Move OK!"
 

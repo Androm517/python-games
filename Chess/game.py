@@ -7,17 +7,12 @@ from chessboard import Chessboard
 from piece import BLACK, WHITE, COLORS
 from player import Player
 from utils import nbr_repr
+from exceptions import ChessException
 
 BIND_IP = '0.0.0.0'
 BIND_PORT = 9999
 
-
-class UnknownCommand(Exception):
-    def __init__(self, cmd):
-        self.cmd = cmd
-
-    def __str__(self):
-        return 'Unknown command: {}'.format(self.cmd)
+logger = logging.getLogger(__name__)
 
 
 class Server:
@@ -26,7 +21,6 @@ class Server:
         self.boardLock = threading.Lock()
         self.board = Chessboard()
         self.started = False
-
         self.commands = {
             'move': self.makeMove,
             'surrender': self.give_up,
@@ -37,10 +31,19 @@ class Server:
         }
 
     def makeMove(self, player, at, to):
-        at = nbr_repr(at)
-        to = nbr_repr(to)
-        print(self.board.movePiece(player.color, at, to))
-        return self.board
+        try:
+            at = nbr_repr(at)
+            to = nbr_repr(to)
+            with self.boardLock:
+                self.board.movePiece(player.color, at, to)
+            player.opponent.tell('{} made a move, your turn.'.format(player.color))
+            player.opponent.tell(str(self.board))
+            return self.board
+        except ChessException as e:
+            return str(e)
+        except Exception as e:
+            logger.exception(e)
+            return str(e)
 
     def give_up(self, player):
         raise NotImplemented()
@@ -50,31 +53,6 @@ class Server:
 
     def say(self, player, *msg):
         raise NotImplemented()
-
-    def handle_message(self, player, message):
-        try:
-            with self.boardLock:
-                response = self.execute_command(player, *message.split())
-        except Exception as e:
-            response = e
-        return str(response)
-
-    def execute_command(self, player, *args):
-        if not args:
-            raise RuntimeError('no args provided...')
-
-        command = args[0]
-
-        if len(command) > 1:
-            params = args[1:]
-        else:
-            params = ()     # empty tuple
-
-        f = self.commands.get(command.lower())
-        if not f:
-            raise UnknownCommand(command)
-
-        return f(player, *params)
 
     # start server and stuff... as someone connects add a player to the list of players
     def run(self):
@@ -94,35 +72,19 @@ class Server:
                     client_sock.close()
                     continue
 
-                def handle_client_connection(player):
-                    while True:
-                        try:
-                            message = player.socket.recv(4096).decode('utf-8')
-                            if not message:
-                                break
-                            response = self.handle_message(player, message)
-                            player.tell(response)
-
-                        except Exception as e:
-                            logging.exception(e)
-                            pass
-
                 if self.players:
                     player = Player(WHITE if self.players[0].color == BLACK else BLACK, client_sock)
                     self.players[0].tell('another player connected, the game can start!')
                 else:
                     player = Player(random.choice(COLORS), client_sock)
                 player.tell('Welcome to the game! You are {}.'.format(player.color))
+                player.commands = self.commands
+                player.start()
                 self.players.append(player)
 
-                client_handler = threading.Thread(
-                    target=handle_client_connection,
-                    args=(player,)  # without comma you'd get a... TypeError: handle_client_connection() argument after * must be a sequence, not _socketobject
-                )
-                client_handler.daemon = True
-                client_handler.start()
-
                 if len(self.players) == 2:
+                    self.players[0].opponent = self.players[1]
+                    self.players[1].opponent = self.players[0]
                     self.game_started = True
 
             except KeyboardInterrupt:
