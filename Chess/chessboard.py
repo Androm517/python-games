@@ -67,9 +67,7 @@ class Chessboard:
         return "Move OK!"
 
     def validateMove(self, target, piece):
-        possible_moves = piece.possibleMoves()
-
-        if target not in possible_moves:
+        if not piece.isPossibleMove(target):
             raise ImpossibleMoveException(piece, target)
 
         if self.isTargetBlocked(target, piece):
@@ -82,15 +80,10 @@ class Chessboard:
             return False
 
     def isTargetSameColor(self, target, piece):
-        active_color = piece.color
-        pieces = self.whitePieces if active_color == WHITE else self.blackPieces
-        for passive_piece in pieces:
-            if passive_piece.getPosition() == target and passive_piece.color == active_color:
-                return True
-        return False
+        return piece.isSameColor(target, self.whitePieces, self.blackPieces)
 
     def isTargetObstructed(self, target, piece):
-        return piece.isObstructed(target, self.whitePieces + self.blackPieces)
+        return piece.isObstructed(target, self.whitePieces, self.blackPieces)
 
     def __str__(self):
         squares = {p.position: p.getName() for p in self.whitePieces + self.blackPieces}

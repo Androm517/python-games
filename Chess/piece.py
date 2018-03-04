@@ -41,6 +41,19 @@ class Piece:
         for move in remove_moves:
             possible_moves.remove(move)
 
+    def isPossibleMove(self, target):
+        if target in self.possibleMoves():
+            return True
+        else:
+            return False
+
+    def isSameColor(self, target, whitePieces, blackPieces):
+        pieces = whitePieces if self.color == WHITE else blackPieces
+        for passive_piece in pieces:
+            if passive_piece.position == target and passive_piece.color == self.color:
+                return True
+        return False
+
     # To be overridden by actual pieces
     def getName(self):
         raise NotImplemented()
@@ -65,7 +78,8 @@ class Pawn(Piece):
                 possible_moves.append((i - 2, j))
         return possible_moves
 
-    def isObstructed(self, target, pieces):
+    def isObstructed(self, target, whitePieces, blackPieces):
+        pieces = whitePieces + blackPieces
         if self.getPosition()[1] == target[1]:
             for piece in pieces:
                 if piece.getPosition() == target:
@@ -87,7 +101,8 @@ class Rook(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
 
-    def isObstructed(self, target, pieces):
+    def isObstructed(self, target, whitePieces, blackPieces):
+        pieces = whitePieces + blackPieces
         i, j = self.position
         end_i, end_j = target
         direction = (end_i - i, end_j, j)
@@ -143,7 +158,7 @@ class Knight(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
-    def isObstructed(self, target, pieces):
+    def isObstructed(self, target, whitePieces, blackPieces):
         return False
 
     def getName(self):
@@ -169,7 +184,8 @@ class Bishop(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
-    def isObstructed(self, target, pieces):
+    def isObstructed(self, target, whitePieces, blackPieces):
+        pieces = whitePieces + blackPieces
         i, j = self.position
         end_i, end_j = target
         direction = (end_i - i, end_j, j)
@@ -228,7 +244,8 @@ class Queen(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
-    def isObstructed(self, target, pieces):
+    def isObstructed(self, target, whitePieces, blackPieces):
+        pieces = whitePieces + blackPieces
         i, j = self.position
         end_i, end_j = target
         direction = (end_i - i, end_j, j)
@@ -305,7 +322,7 @@ class King(Piece):
         self.removeMoves(possible_moves)
         return possible_moves
 
-    def isObstructed(self):
+    def isObstructed(self, target, whitePieces, blackPieces):
         return False
 
     def getName(self):
