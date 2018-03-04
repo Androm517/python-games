@@ -140,7 +140,6 @@ class Knight(Piece):
         possible_moves.extend([(i + k, j + 1) for k in range(-2, 3, 4)])
         possible_moves.extend([(i + 1, j + k) for k in range(-2, 3, 4)])
         possible_moves.extend([(i - 1, j + k) for k in range(-2, 3, 4)])
-        possible_moves.remove((i, j))
         self.removeMoves(possible_moves)
         return possible_moves
 
