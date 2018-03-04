@@ -48,7 +48,7 @@ class Chessboard:
         pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (self.blackPieces, self.whitePieces)
 
         for p in pieces:
-            if p.position == start:
+            if p.isAtPosition(start):
                 piece = p
                 break
         else:
@@ -57,7 +57,7 @@ class Chessboard:
         self.validateMove(target, piece)
         # remove taken pieces (if any)
         for i, p in enumerate(passive):
-            if p.position == target:
+            if p.isAtPosition(target):
                 del passive[i]
                 break
 

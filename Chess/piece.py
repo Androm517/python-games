@@ -41,6 +41,12 @@ class Piece:
         for move in remove_moves:
             possible_moves.remove(move)
 
+    def isAtPosition(self, target):
+        if self.position == target:
+            return True
+        else:
+            return False
+
     def isPossibleMove(self, target):
         if target in self.possibleMoves():
             return True
