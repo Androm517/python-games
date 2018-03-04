@@ -1,11 +1,9 @@
 """
 class: Chessboard
 """
-import itertools
 import logging
 
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
-from utils import str_repr, nbr_repr
 from exceptions import NotYourTurnException, PieceNotFoundException, ImpossibleMoveException
 
 
@@ -37,8 +35,8 @@ class Chessboard:
         self.blackPieces.append(Rook('a' + '8', BLACK))
         self.blackPieces.append(Knight('b' + '8', BLACK))
         self.blackPieces.append(Bishop('c' + '8', BLACK))
-        self.blackPieces.append(King('e' + '8', BLACK))
         self.blackPieces.append(Queen('d' + '8', BLACK))
+        self.blackPieces.append(King('e' + '8', BLACK))
         self.blackPieces.append(Bishop('f' + '8', BLACK))
         self.blackPieces.append(Knight('g' + '8', BLACK))
         self.blackPieces.append(Rook('h' + '8', BLACK))
