@@ -2,6 +2,7 @@
 classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
 """
 from utils import str_repr, nbr_repr
+from position import Position
 
 
 BLACK = 'black'
@@ -14,41 +15,33 @@ class Piece:
         if color not in COLORS:
             raise ValueError('{} is not a valid color'.format(color))
         self.color = color
-
-        if isinstance(position, str):
-            if len(position) != 2:
-                raise ValueError('{} is not a valid position'.format(position))
-            position = nbr_repr(position)
-
-        if position[0] > 7 or position[0] < 0 or position[1] > 7 or position[1] < 0:
-            raise ValueError('{} is not a valid position'.format(position))
-
-        self.position = position
+        self.position = Position(position)
         self.firstMove = True
 
     def getPosition(self):
         return self.position
 
-    def setPosition(self, position):
-        self.position = position
+    def setPosition(self, target):
+        self.position = Position(target)
         self.firstMove = False
 
     def removeMoves(self, possible_moves):
         remove_moves = []
         for move in possible_moves:
-            if move[0] < 0 or move[0] > 8 or move[1] < 0 or move[1] > 8:
-                remove_moves.append(move)
+            tmp_move = move.coordinates
+            if tmp_move[0] < 0 or tmp_move[0] > 8 or tmp_move[1] < 0 or tmp_move[1] > 8:
+                remove_moves.append(tmp_move)
         for move in remove_moves:
             possible_moves.remove(move)
 
     def isAtPosition(self, target):
-        if self.position == target:
+        if self.position == Position(target):
             return True
         else:
             return False
 
     def isPossibleMove(self, target):
-        if target in self.possibleMoves():
+        if Position(target) in self.possibleMoves():
             return True
         else:
             return False
@@ -56,8 +49,20 @@ class Piece:
     def isSameColor(self, target, whitePieces, blackPieces):
         pieces = whitePieces if self.color == WHITE else blackPieces
         for passive_piece in pieces:
-            if passive_piece.position == target and passive_piece.color == self.color:
+            if passive_piece.isAtPosition(target) and passive_piece.color == self.color:
                 return True
+        return False
+
+    def isObstructed(self, target, whitePieces, blackPieces):
+        pieces = whitePieces + blackPieces
+        unit_vector = self.unitVector(Position(target))
+        pos = self.position
+        pos = pos.add(unit_vector)
+        while pos != Position(target):
+            for piece in pieces:
+                if piece.position == pos:
+                    return True
+            pos = pos.add(unit_vector)
         return False
 
     # To be overridden by actual pieces
@@ -73,29 +78,55 @@ class Pawn(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
+        row, column = self.position.getRow(), self.position.getColumn()
+        move_forward = row
+        move_left = row.sub(column)
+        move_right = row.add(column)
         if self.color == WHITE:
-            possible_moves = [(i + 1, j - 1), (i + 1, j), (i + 1, j + 1)]
+            possible_moves = [self.position.add(move_forward), self.position.add(move_left), self.position.add(move_right)]
             if self.firstMove:
-                possible_moves.append((i + 2, j))
+                double = Position((2, 0))
+                possible_moves.append(self.position.add(double) )
         else:
-            possible_moves = [(i - 1, j - 1), (i - 1, j), (i - 1, j + 1)]
+            possible_moves = [self.position.sub(move_forward), self.position.sub(move_left), self.position.sub(move_right)]
             if self.firstMove:
-                possible_moves.append((i - 2, j))
+                double = Position((2, 0))
+                possible_moves.append(self.position.sub(double))
         return possible_moves
 
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
-        if self.getPosition()[1] == target[1]:
-            for piece in pieces:
-                if piece.getPosition() == target:
-                    return True
-            return False
+        if self.color == WHITE:
+            forward = self.position.add(Position( (1, 0) ) )
+            double_forward = forward.add(Position( (1, 0) ) )
+            left = self.position.add( Position(1, -1))
+            right = self.position.add( Position(1, 1))
         else:
+            forward = self.position.sub(Position((1, 0)))
+            double_forward = forward.sub(Position((1, 0)))
+            left = self.position.sub(Position(1, -1))
+            right = self.position.sub(Position(1, 1))
+        move = Position(target)
+        if move == forward:
             for piece in pieces:
-                if piece.getPosition() == target:
-                    return False
-        return True
+                if piece.position == forward:
+                    return True
+        if move == double_forward:
+            for piece in pieces:
+                if piece.position == forward:
+                    return True
+            for piece in pieces:
+                if piece.position == double_forward:
+                    return True
+        if move == left:
+            for piece in pieces:
+                if piece.position == left:
+                    return True
+        if move == right:
+            for piece in pieces:
+                if piece.position == right:
+                    return True
+        return False
 
     def getName(self):
         if self.color == BLACK:
@@ -109,40 +140,22 @@ class Rook(Piece):
 
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
-        i, j = self.position
-        end_i, end_j = target
-        direction = (end_i - i, end_j, j)
-        if direction[0] > 0 and direction[1] == 0:
-            while (i, j) != target:
-                i += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] == 0 and direction[1] > 0:
-            while (i, j) != target:
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] == 0:
-            while (i, j) != target:
-                i -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        else:
-            while (i, j) != target:
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
+        unit_vector = self.unitVector(Position(target))
+        pos = self.position
+        pos = pos.add(unit_vector)
+        while pos != Position(target):
+            for piece in pieces:
+                if piece.position == pos:
+                    return True
+            pos = pos.add(unit_vector)
         return False
 
     def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i, k) for k in range(0, 8)]
-        possible_moves.extend([(k, j) for k in range(0, 8)])
-        possible_moves.remove((i, j))
+        row, column = self.position.getRow(), self.position.getColumn()
+        possible_moves = [row.add(Position( (0, k))) for k in range(0, 8)]
+        possible_moves.extend([column.add(Position( (k, 0))) for k in range(0, 8)])
+        while self.position in possible_moves:
+            possible_moves.remove(self.position)
         return possible_moves
 
     def getName(self):
@@ -156,11 +169,16 @@ class Knight(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i + k, j - 1) for k in range(-2, 3, 4)]
-        possible_moves.extend([(i + k, j + 1) for k in range(-2, 3, 4)])
-        possible_moves.extend([(i + 1, j + k) for k in range(-2, 3, 4)])
-        possible_moves.extend([(i - 1, j + k) for k in range(-2, 3, 4)])
+        move_one = Position( (2, 1))
+        move_two = Position( (2, -1))
+        move_three = Position( (-2, 1))
+        move_four = Position( (-2, -1))
+        move_five = Position( (2, 1))
+        move_six = Position( (2, -1))
+        move_seven = Position( (-2, 1))
+        move_eight = Position( (-2, -1))
+        moves = [move_one, move_two, move_three, move_four, move_five, move_six, move_seven, move_eight]
+        possible_moves = [self.position.add(move) for move in moves]
         self.removeMoves(possible_moves)
         return possible_moves
 
@@ -178,52 +196,18 @@ class Bishop(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
-        relative_i, relative_j = i - 8, j - 8
-        possible_moves = []
-        for k in range(16):
-            possible_moves.append((relative_i + k, relative_j + k))
-        relative_i, relative_j = i - 8, j + 8
-        for k in range(16):
-            possible_moves.append((relative_i + k, relative_j - k))
-        possible_moves.remove((i, j))
+        direction_upper_right = Position( (1, 1))
+        direction_down_right = Position( (-1, 1))
+        direction_upper_left = Position( (1, -1))
+        direction_down_left = Position( (-1, -1))
+        possible_moves = [self.position.add(direction_upper_right.multiply(k)) for k in range(8)]
+        possible_moves.extend([self.position.add(direction_down_right.multiply(k)) for k in range(8)])
+        possible_moves.extend([self.position.add(direction_upper_left.multiply(k)) for k in range(8)])
+        possible_moves.extend([self.position.add(direction_down_left.multiply(k)) for k in range(8)])
+        while self.position in possible_moves:
+            possible_moves.remove(self.position)
         self.removeMoves(possible_moves)
         return possible_moves
-
-    def isObstructed(self, target, whitePieces, blackPieces):
-        pieces = whitePieces + blackPieces
-        i, j = self.position
-        end_i, end_j = target
-        direction = (end_i - i, end_j, j)
-        if direction[0] > 0 and direction[1] > 0:
-            while (i, j) != target:
-                i += 1
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] > 0:
-            while (i, j) != target:
-                i -= 1
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] < 0:
-            while (i, j) != target:
-                i -= 1
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        else:
-            while (i, j) != target:
-                i += 1
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        return False
 
     def getName(self):
         if self.color == BLACK:
@@ -235,79 +219,33 @@ class Queen(Piece):
     def __init__(self, position, color):
         super().__init__(position, color)
 
-    def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i, k) for k in range(0, 8)]
-        possible_moves.extend([(k, j) for k in range(0, 8)])
-        possible_moves.remove((i, j))
-        relative_i, relative_j = i - 8, j - 8
-        for k in range(16):
-            possible_moves.append((relative_i + k, relative_j + k))
-        relative_i, relative_j = i - 8, j + 8
-        for k in range(16):
-            possible_moves.append((relative_i + k, relative_j - k))
-        possible_moves.remove((i, j))
+    def possibleMovesRookMoves(self):
+        row, column = self.position.getRow(), self.position.getColumn()
+        possible_moves = [row.add(Position((0, k))) for k in range(0, 8)]
+        possible_moves.extend([column.add(Position((k, 0))) for k in range(0, 8)])
+        while self.position in possible_moves:
+            possible_moves.remove(self.position)
+        return possible_moves
+
+    def possibleMovesBishopMoves(self):
+        direction_upper_right = Position( (1, 1))
+        direction_down_right = Position( (-1, 1))
+        direction_upper_left = Position( (1, -1))
+        direction_down_left = Position( (-1, -1))
+        possible_moves = [self.position.add(direction_upper_right.multiply(k)) for k in range(8)]
+        possible_moves.extend([self.position.add(direction_down_right.multiply(k)) for k in range(8)])
+        possible_moves.extend([self.position.add(direction_upper_left.multiply(k)) for k in range(8)])
+        possible_moves.extend([self.position.add(direction_down_left.multiply(k)) for k in range(8)])
+        while self.position in possible_moves:
+            possible_moves.remove(self.position)
         self.removeMoves(possible_moves)
         return possible_moves
 
-    def isObstructed(self, target, whitePieces, blackPieces):
-        pieces = whitePieces + blackPieces
-        i, j = self.position
-        end_i, end_j = target
-        direction = (end_i - i, end_j, j)
-        if direction[0] > 0 and direction[1] == 0:
-            while (i, j) != target:
-                i += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] == 0 and direction[1] > 0:
-            while (i, j) != target:
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] == 0:
-            while (i, j) != target:
-                i -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] == 0 and direction[1] < 0:
-            while (i, j) != target:
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] > 0 and direction[1] > 0:
-            while (i, j) != target:
-                i += 1
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] > 0:
-            while (i, j) != target:
-                i -= 1
-                j += 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        elif direction[0] < 0 and direction[1] < 0:
-            while (i, j) != target:
-                i -= 1
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        else:
-            while (i, j) != target:
-                i += 1
-                j -= 1
-                for piece in pieces:
-                    if piece.getPosition() == (i, j):
-                        return True
-        return False
+    def possibleMoves(self):
+        possible_moves = self.possibleMovesRookMoves()
+        possible_moves.extend(self.possibleMovesBishopMoves())
+        return possible_moves
+
 
     def getName(self):
         if self.color == BLACK:
@@ -320,12 +258,16 @@ class King(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        i, j = self.position
-        possible_moves = [(i + 1, j + k) for k in range(-1, 2)]
-        possible_moves.extend([(i, j + k) for k in range(-1, 2)])
-        possible_moves.extend([(i - 1, j + k) for k in range(-1, 2)])
-        possible_moves.remove((i, j))
-        self.removeMoves(possible_moves)
+        move_one = Position( (1, -1))
+        move_two = Position( (1, 0))
+        move_three = Position( (1, 1))
+        move_four = Position( (0, 1))
+        move_five = Position( (-1, 1))
+        move_six = Position( (-1, 0))
+        move_seven = Position( (-1, -1))
+        move_eight = Position( (0, -1))
+        moves = [move_one, move_two, move_three, move_four, move_five, move_six, move_seven, move_eight]
+        possible_moves = [self.position.add(move) for move in moves]
         return possible_moves
 
     def isObstructed(self, target, whitePieces, blackPieces):
