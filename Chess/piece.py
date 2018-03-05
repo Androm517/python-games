@@ -30,7 +30,7 @@ class Piece:
         for move in possible_moves:
             tmp_move = move.coordinates
             if tmp_move[0] < 0 or tmp_move[0] > 8 or tmp_move[1] < 0 or tmp_move[1] > 8:
-                remove_moves.append(tmp_move)
+                remove_moves.append(move)
         for move in remove_moves:
             possible_moves.remove(move)
 
@@ -55,7 +55,7 @@ class Piece:
 
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
-        unit_vector = self.unitVector(Position(target))
+        unit_vector = self.position.unitVector(Position(target))
         pos = self.position
         pos = pos.add(unit_vector)
         while pos != Position(target):
@@ -97,15 +97,15 @@ class Pawn(Piece):
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
         if self.color == WHITE:
-            forward = self.position.add(Position( (1, 0) ) )
-            double_forward = forward.add(Position( (1, 0) ) )
-            left = self.position.add( Position(1, -1))
-            right = self.position.add( Position(1, 1))
+            forward = self.position.add(Position( (1, 0) ))
+            double_forward = forward.add(Position( (1, 0) ))
+            left = self.position.add( Position( (1, -1) ))
+            right = self.position.add( Position( (1, 1) ))
         else:
             forward = self.position.sub(Position((1, 0)))
             double_forward = forward.sub(Position((1, 0)))
-            left = self.position.sub(Position(1, -1))
-            right = self.position.sub(Position(1, 1))
+            left = self.position.sub(Position( (1, -1) ))
+            right = self.position.sub(Position( (1, 1) ))
         move = Position(target)
         if move == forward:
             for piece in pieces:

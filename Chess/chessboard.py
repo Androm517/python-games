@@ -4,6 +4,7 @@ class: Chessboard
 import logging
 
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
+from position import Position
 from exceptions import NotYourTurnException, PieceNotFoundException, ImpossibleMoveException
 
 
@@ -44,6 +45,14 @@ class Chessboard:
     def movePiece(self, color, start, target):
         if color != self.currentPlayer:
             raise NotYourTurnException(color)
+
+        position = Position(start)
+        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or position.coordinates[1] < 0:
+            raise ValueError('{} is not a valid position'.format(position))
+
+        position = Position(target)
+        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or position.coordinates[1] < 0:
+            raise ValueError('{} is not a valid position'.format(position))
 
         pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (self.blackPieces, self.whitePieces)
 
@@ -86,7 +95,7 @@ class Chessboard:
         return piece.isObstructed(target, self.whitePieces, self.blackPieces)
 
     def __str__(self):
-        squares = {p.position: p.getName() for p in self.whitePieces + self.blackPieces}
+        squares = {p.position.coordinates: p.getName() for p in self.whitePieces + self.blackPieces}
         s = '  A B C D E F G H \n'
         for row in reversed(range(0, 8)):
             s += chr(ord('1') + row) + ' '

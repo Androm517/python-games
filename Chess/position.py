@@ -12,8 +12,7 @@ class Position:
         else:
             self.coordinates = position
         position = self.coordinates
-        if position[0] > 7 or position[0] < 0 or position[1] > 7 or position[1] < 0:
-            raise ValueError('{} is not a valid position'.format(position))
+
 
     def getColumn(self):
         column = self.coordinates[1]
@@ -42,15 +41,15 @@ class Position:
 
     def unitVector(self, other_position):
         pos = other_position.sub(self)
-        if pos.coordinate[0] == 0:
-            column = pos.coordinate[1] / abs(pos.coordinate[1])
+        if pos.coordinates[0] == 0:
+            column = pos.coordinates[1] / abs(pos.coordinates[1])
             return Position((0, column))
-        elif pos.coordinate[1] == 0:
-            row = pos.coordinate[0] / abs(pos.coordinate[0])
+        elif pos.coordinates[1] == 0:
+            row = pos.coordinates[0] / abs(pos.coordinates[0])
             return Position((row, 0))
         else:
-            denominator = pos.coordinate[0]
-            row, column = pos.coordinate[0] / denominator, pos.coordinate[1] / denominator
+            denominator = abs(pos.coordinates[0])
+            row, column = pos.coordinates[0] / denominator, pos.coordinates[1] / denominator
             return Position( (row, column))
 
 
