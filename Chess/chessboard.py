@@ -94,10 +94,10 @@ class Chessboard:
         return piece.isObstructed(target, self.whitePieces, self.blackPieces)
 
     def __str__(self):
-        squares = {p.position.coordinates: p.getName() for p in self.whitePieces + self.blackPieces}
+        squares = {str(p.position): p.getName() for p in self.whitePieces + self.blackPieces}
         s = '  A B C D E F G H \n'
-        for row in reversed(range(0, 8)):
-            s += chr(ord('1') + row) + ' '
-            s += ' '.join(squares.get((row, column), '#') for column in range(0, 8))
+        for row in '87654321':
+            s += row + ' '
+            s += ' '.join(squares.get(column + row, '#') for column in 'abcdefgh')
             s += '\n'
         return s
