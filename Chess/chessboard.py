@@ -4,7 +4,6 @@ class: Chessboard
 import logging
 
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
-from position import Position
 from exceptions import NotYourTurnException, PieceNotFoundException, ImpossibleMoveException
 
 
@@ -73,9 +72,7 @@ class Chessboard:
         return "Move OK!"
 
     def isPositionOnChessboard(self, start):
-        position = Position(start)
-        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or \
-                position.coordinates[1] < 0:
+        if not start[0] in 'abcdefgh' or not start[1] in '12345678':
             return False
         else:
             return True
@@ -99,7 +96,7 @@ class Chessboard:
         return piece.isObstructed(target, self.whitePieces, self.blackPieces)
 
     def __str__(self):
-        squares = {str(p.position): p.getName() for p in self.whitePieces + self.blackPieces}
+        squares = {str(p.getPosition()): p.getName() for p in self.whitePieces + self.blackPieces}
         s = '  A B C D E F G H \n'
         for row in '87654321':
             s += row + ' '
