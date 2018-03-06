@@ -1,4 +1,3 @@
-from utils import str_repr
 
 
 class ChessException(Exception):
@@ -27,7 +26,7 @@ class PieceNotFoundException(ChessException):
         self.position = position
 
     def __str__(self):
-        return 'no {} piece found at {}'.format(self.player, str_repr(self.position))
+        return 'no {} piece found at {}'.format(self.player, self.position)
 
 
 class ImpossibleMoveException(ChessException):
@@ -36,4 +35,4 @@ class ImpossibleMoveException(ChessException):
         self.target = target
 
     def __str__(self):
-        return 'Impossible move: {} {}'.format(self.piece, str_repr(self.target))
+        return 'Impossible move: {} {}'.format(self.piece, self.target)

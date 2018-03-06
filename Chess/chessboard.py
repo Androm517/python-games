@@ -46,13 +46,10 @@ class Chessboard:
         if color != self.currentPlayer:
             raise NotYourTurnException(color)
 
-        position = Position(start)
-        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or position.coordinates[1] < 0:
-            raise ValueError('{} is not a valid position'.format(position))
-
-        position = Position(target)
-        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or position.coordinates[1] < 0:
-            raise ValueError('{} is not a valid position'.format(position))
+        if not self.isPositionOnChessboard(start):
+            raise ValueError('{} is not a valid position'.format(start))
+        if not self.isPositionOnChessboard(target):
+            raise ValueError('{} is not a valid position'.format(target))
 
         pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (self.blackPieces, self.whitePieces)
 
@@ -74,6 +71,14 @@ class Chessboard:
         self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
 
         return "Move OK!"
+
+    def isPositionOnChessboard(self, start):
+        position = Position(start)
+        if position.coordinates[0] > 7 or position.coordinates[0] < 0 or position.coordinates[1] > 7 or \
+                position.coordinates[1] < 0:
+            return False
+        else:
+            return True
 
     def validateMove(self, target, piece):
         if not piece.isPossibleMove(target):
