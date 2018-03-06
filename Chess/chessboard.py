@@ -59,12 +59,14 @@ class Chessboard:
     def makeMove(self, color, start, target):
         active_piece, passive_pieces = self.getActivePieceAndPassivePieces(color, start)
         self.validateMove(active_piece, target)
-        # remove taken pieces (if any)
-        for i, passive_piece in enumerate(passive_pieces):
-            if passive_piece.isAtPosition(target):
-                del passive_pieces[i]
-                break
+        self.removeCapturedPiece(passive_pieces, target)
         active_piece.setPosition(target)
+
+    def isPositionOnChessboard(self, start):
+        if not start[0] in 'abcdefgh' or not start[1] in '12345678':
+            return False
+        else:
+            return True
 
     def getActivePieceAndPassivePieces(self, color, start):
         active_pieces, passive_pieces = (self.whitePieces, self.blackPieces) if color == WHITE else (
@@ -77,17 +79,17 @@ class Chessboard:
             raise PieceNotFoundException(color, start)
         return piece, passive_pieces
 
-    def isPositionOnChessboard(self, start):
-        if not start[0] in 'abcdefgh' or not start[1] in '12345678':
-            return False
-        else:
-            return True
-
     def validateMove(self, piece, target):
         if not piece.isPossibleMove(target):
             raise ImpossibleMoveException(piece, target)
         if self.isTargetBlocked(piece, target):
             raise ImpossibleMoveException(piece, target)
+
+    def removeCapturedPiece(self, passive_pieces, target):
+        for i, passive_piece in enumerate(passive_pieces):
+            if passive_piece.isAtPosition(target):
+                del passive_pieces[i]
+                break
 
     def isTargetBlocked(self, piece, target):
         if self.isTargetSameColor(piece, target) or self.isTargetObstructed(piece, target):
