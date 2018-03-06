@@ -80,7 +80,7 @@ class Chessboard:
     def validateMove(self, piece, target):
         if not piece.isPossibleMove(target):
             raise ImpossibleMoveException(piece, target)
-        if self.isTargetBlocked(target, piece):
+        if self.isTargetBlocked(piece, target):
             raise ImpossibleMoveException(piece, target)
 
     def isTargetBlocked(self, piece, target):
