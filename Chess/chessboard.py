@@ -50,19 +50,20 @@ class Chessboard:
         if not self.isPositionOnChessboard(target):
             raise ValueError('{} is not a valid position'.format(target))
 
-        passive, piece = self.getActivePiece(color, start)
+        self.makeMove(color, start, target)
+        self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
 
+        return "Move OK!"
+
+    def makeMove(self, color, start, target):
+        passive, piece = self.getActivePiece(color, start)
         self.validateMove(piece, target)
         # remove taken pieces (if any)
         for i, p in enumerate(passive):
             if p.isAtPosition(target):
                 del passive[i]
                 break
-
         piece.setPosition(target)
-        self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
-
-        return "Move OK!"
 
     def getActivePiece(self, color, start):
         pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (
