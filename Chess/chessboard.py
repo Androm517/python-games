@@ -59,7 +59,7 @@ class Chessboard:
         else:
             raise PieceNotFoundException(color, start)
 
-        self.validateMove(target, piece)
+        self.validateMove(piece, target)
         # remove taken pieces (if any)
         for i, p in enumerate(passive):
             if p.isAtPosition(target):
@@ -77,22 +77,22 @@ class Chessboard:
         else:
             return True
 
-    def validateMove(self, target, piece):
+    def validateMove(self, piece, target):
         if not piece.isPossibleMove(target):
             raise ImpossibleMoveException(piece, target)
         if self.isTargetBlocked(target, piece):
             raise ImpossibleMoveException(piece, target)
 
-    def isTargetBlocked(self, target, piece):
-        if self.isTargetSameColor(target, piece) or self.isTargetObstructed(target, piece):
+    def isTargetBlocked(self, piece, target):
+        if self.isTargetSameColor(piece, target) or self.isTargetObstructed(piece, target):
             return True
         else:
             return False
 
-    def isTargetSameColor(self, target, piece):
+    def isTargetSameColor(self, piece, target):
         return piece.isSameColor(target, self.whitePieces, self.blackPieces)
 
-    def isTargetObstructed(self, target, piece):
+    def isTargetObstructed(self, piece, target):
         return piece.isObstructed(target, self.whitePieces, self.blackPieces)
 
     def __str__(self):
