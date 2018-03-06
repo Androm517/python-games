@@ -49,7 +49,9 @@ class Server:
         raise NotImplemented()
 
     def say(self, player, *msg):
-        raise NotImplemented()
+        msg = list(msg)
+        player.opponent.tell(' '.join(msg))
+        return None
 
     # start server and stuff... as someone connects add a player to the list of players
     def run(self):

@@ -35,7 +35,8 @@ class Player(threading.Thread):
                 if not message:
                     break
                 response = self.handle_message(message)
-                self.tell(response)
+                if response != 'None':
+                    self.tell(response)
 
             except Exception as e:
                 logging.exception(e)
