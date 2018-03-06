@@ -6,7 +6,6 @@ import random
 from chessboard import Chessboard
 from piece import BLACK, WHITE, COLORS
 from player import Player
-from utils import nbr_repr
 from exceptions import ChessException
 
 BIND_IP = '0.0.0.0'
@@ -32,8 +31,6 @@ class Server:
 
     def makeMove(self, player, at, to):
         try:
-            at = nbr_repr(at)
-            to = nbr_repr(to)
             with self.boardLock:
                 self.board.movePiece(player.color, at, to)
             player.opponent.tell('{} made a move, your turn.'.format(player.color))
