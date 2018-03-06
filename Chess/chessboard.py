@@ -42,18 +42,19 @@ class Chessboard:
         self.blackPieces.append(Rook('h' + '8', BLACK))
 
     def movePiece(self, color, start, target):
-        if color != self.currentPlayer:
-            raise NotYourTurnException(color)
-
-        if not self.isPositionOnChessboard(start):
-            raise ValueError('{} is not a valid position'.format(start))
-        if not self.isPositionOnChessboard(target):
-            raise ValueError('{} is not a valid position'.format(target))
-
+        self.checkInputArgs(color, start, target)
         self.makeMove(color, start, target)
         self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
 
         return "Move OK!"
+
+    def checkInputArgs(self, color, start, target):
+        if color != self.currentPlayer:
+            raise NotYourTurnException(color)
+        if not self.isPositionOnChessboard(start):
+            raise ValueError('{} is not a valid position'.format(start))
+        if not self.isPositionOnChessboard(target):
+            raise ValueError('{} is not a valid position'.format(target))
 
     def makeMove(self, color, start, target):
         passive, piece = self.getActivePiece(color, start)
