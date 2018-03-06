@@ -78,10 +78,9 @@ class Pawn(Piece):
         super().__init__(position, color)
 
     def possibleMoves(self):
-        row, column = self.position.getRow(), self.position.getColumn()
-        move_forward = row
-        move_left = row.sub(column)
-        move_right = row.add(column)
+        move_forward = Position( (1, 0))
+        move_left = move_forward.add(Position( (0, -1)))
+        move_right = move_forward.add(Position( (0, 1)))
         if self.color == WHITE:
             possible_moves = [self.position.add(move_forward), self.position.add(move_left), self.position.add(move_right)]
             if self.firstMove:
@@ -95,6 +94,7 @@ class Pawn(Piece):
         return possible_moves
 
     def isObstructed(self, target, whitePieces, blackPieces):
+        passive_pieces = whitePieces if self.color == BLACK else blackPieces
         pieces = whitePieces + blackPieces
         if self.color == WHITE:
             forward = self.position.add(Position( (1, 0) ))
@@ -119,13 +119,17 @@ class Pawn(Piece):
                 if piece.position == double_forward:
                     return True
         if move == left:
-            for piece in pieces:
+            for piece in passive_pieces:
                 if piece.position == left:
-                    return True
+                    break
+            else:
+                return True
         if move == right:
-            for piece in pieces:
+            for piece in passive_pieces:
                 if piece.position == right:
-                    return True
+                    break
+            else:
+                return True
         return False
 
     def getName(self):
