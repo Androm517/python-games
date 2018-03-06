@@ -50,14 +50,7 @@ class Chessboard:
         if not self.isPositionOnChessboard(target):
             raise ValueError('{} is not a valid position'.format(target))
 
-        pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (self.blackPieces, self.whitePieces)
-
-        for p in pieces:
-            if p.isAtPosition(start):
-                piece = p
-                break
-        else:
-            raise PieceNotFoundException(color, start)
+        passive, piece = self.getActivePiece(color, start)
 
         self.validateMove(piece, target)
         # remove taken pieces (if any)
@@ -70,6 +63,17 @@ class Chessboard:
         self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
 
         return "Move OK!"
+
+    def getActivePiece(self, color, start):
+        pieces, passive = (self.whitePieces, self.blackPieces) if color == WHITE else (
+        self.blackPieces, self.whitePieces)
+        for p in pieces:
+            if p.isAtPosition(start):
+                piece = p
+                break
+        else:
+            raise PieceNotFoundException(color, start)
+        return passive, piece
 
     def isPositionOnChessboard(self, start):
         if not start[0] in 'abcdefgh' or not start[1] in '12345678':
