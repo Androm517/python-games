@@ -11,8 +11,6 @@ class Position:
             self.coordinates = (ord(position[1]) - ord('1'), ord(position[0]) - ord('a'))
         else:
             self.coordinates = position
-        position = self.coordinates
-
 
     def getColumn(self):
         column = self.coordinates[1]
@@ -20,7 +18,7 @@ class Position:
 
     def getRow(self):
         row = self.coordinates[0]
-        return Position((row, 0))
+        return Position( (row, 0))
 
     def add(self, other_position):
         pos = (self.coordinates[0] + other_position.coordinates[0], self.coordinates[1] + other_position.coordinates[1])
@@ -42,14 +40,14 @@ class Position:
     def unitVector(self, other_position):
         pos = other_position.sub(self)
         if pos.coordinates[0] == 0:
-            column = pos.coordinates[1] / abs(pos.coordinates[1])
+            column = 1 if pos.coordinates[1] > 0 else -1
             return Position((0, column))
         elif pos.coordinates[1] == 0:
-            row = pos.coordinates[0] / abs(pos.coordinates[0])
+            row = 1 if pos.coordinates[0] > 0 else -1
             return Position((row, 0))
         else:
-            denominator = abs(pos.coordinates[0])
-            row, column = pos.coordinates[0] / denominator, pos.coordinates[1] / denominator
+            row = 1 if pos.coordinates[0] > 0 else -1
+            column = 1 if pos.coordinates[1] > 0 else -1
             return Position( (row, column))
 
 

@@ -56,13 +56,13 @@ class Piece:
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
         unit_vector = self.position.unitVector(Position(target))
-        pos = self.position
-        pos = pos.add(unit_vector)
-        while pos != Position(target):
+        position = self.position
+        position = position.add(unit_vector)
+        while position != Position(target):
             for piece in pieces:
-                if piece.position == pos:
+                if piece.position == position:
                     return True
-            pos = pos.add(unit_vector)
+            position = position.add(unit_vector)
         return False
 
     # To be overridden by actual pieces
@@ -70,7 +70,7 @@ class Piece:
         raise NotImplemented()
 
     def __str__(self):
-        return self.getName() + str_repr(self.position)
+        return self.getName() + str(self.position)
 
 
 class Pawn(Piece):
@@ -141,13 +141,13 @@ class Rook(Piece):
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
         unit_vector = self.unitVector(Position(target))
-        pos = self.position
-        pos = pos.add(unit_vector)
-        while pos != Position(target):
+        position = self.position
+        position = position.add(unit_vector)
+        while position != Position(target):
             for piece in pieces:
-                if piece.position == pos:
+                if piece.position == position:
                     return True
-            pos = pos.add(unit_vector)
+            position = position.add(unit_vector)
         return False
 
     def possibleMoves(self):
