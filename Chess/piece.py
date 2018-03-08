@@ -1,7 +1,6 @@
 """
 classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
 """
-from utils import str_repr, nbr_repr
 from position import Position
 
 
@@ -11,19 +10,19 @@ COLORS = (BLACK, WHITE)
 
 
 class Piece:
-    def __init__(self, position, color):
+    def __init__(self, position, color, name):
         if color not in COLORS:
             raise ValueError('{} is not a valid color'.format(color))
         self.color = color
         self.position = Position(position)
-        self.firstMove = True
+        self.name = name
+        # make possible move an attribute. Then it is easy to promote pawns.
 
     def getPosition(self):
         return self.position
 
     def setPosition(self, target):
         self.position = Position(target)
-        self.firstMove = False
 
     def removeMoves(self, possible_moves):
         remove_moves = []
@@ -74,8 +73,8 @@ class Piece:
 
 
 class Pawn(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def possibleMoves(self):
         move_forward = Position( (1, 0))
@@ -139,8 +138,8 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def isObstructed(self, target, whitePieces, blackPieces):
         pieces = whitePieces + blackPieces
@@ -169,8 +168,8 @@ class Rook(Piece):
 
 
 class Knight(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def possibleMoves(self):
         move_one = Position( (2, 1))
@@ -196,8 +195,8 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def possibleMoves(self):
         direction_upper_right = Position( (1, 1))
@@ -220,8 +219,8 @@ class Bishop(Piece):
 
 
 class Queen(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def possibleMovesRookMoves(self):
         row, column = self.position.getRow(), self.position.getColumn()
@@ -258,8 +257,8 @@ class Queen(Piece):
 
 
 class King(Piece):
-    def __init__(self, position, color):
-        super().__init__(position, color)
+    def __init__(self, position, color, name):
+        super().__init__(position, color, name)
 
     def possibleMoves(self):
         move_one = Position( (1, -1))
@@ -277,6 +276,11 @@ class King(Piece):
     def isObstructed(self, target, whitePieces, blackPieces):
         return False
 
+    def castleLong(self):
+        pass
+
+    def castleShort(self):
+        pass
     def getName(self):
         if self.color == BLACK:
             return '\u265A'

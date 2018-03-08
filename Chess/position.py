@@ -2,7 +2,6 @@
 class: Position
 """
 
-
 class Position:
     def __init__(self, position):
         if isinstance(position, str):
@@ -19,6 +18,12 @@ class Position:
     def getRow(self):
         row = self.coordinates[0]
         return Position( (row, 0))
+
+    def isPositionOutsideBoard(self):
+        if self.coordinates[0] < 0 or self.coordinates[0] > 7 or self.coordinates[1] < 0 or self.coordinates[1] > 7:
+            return True
+        else:
+            return False
 
     def add(self, other_position):
         pos = (self.coordinates[0] + other_position.coordinates[0], self.coordinates[1] + other_position.coordinates[1])

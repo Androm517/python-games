@@ -4,6 +4,7 @@ class: Chessboard
 import logging
 
 from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
+from gameRules import GameRules
 from exceptions import NotYourTurnException, PieceNotFoundException, ImpossibleMoveException
 
 
@@ -13,33 +14,33 @@ logger = logging.getLogger(__name__)
 class Chessboard:
     def __init__(self):
         self.squares = {}
-        self.blackPieces = []
-        self.whitePieces = []
+        self.black_pieces = []
+        self.white_pieces = []
         self.currentPlayer = WHITE
         self.winner = None
-
         self.setupInitialPosition()
+        self.gameRules = GameRules(self.white_pieces, self.black_pieces)
 
     def setupInitialPosition(self):
-        self.whitePieces += [Pawn(col + '2', WHITE) for col in 'abcdefgh']
-        self.whitePieces.append(Rook('a' + '1', WHITE))
-        self.whitePieces.append(Knight('b' + '1', WHITE))
-        self.whitePieces.append(Bishop('c' + '1', WHITE))
-        self.whitePieces.append(Queen('d' + '1', WHITE))
-        self.whitePieces.append(King('e' + '1', WHITE))
-        self.whitePieces.append(Bishop('f' + '1', WHITE))
-        self.whitePieces.append(Knight('g' + '1', WHITE))
-        self.whitePieces.append(Rook('h' + '1', WHITE))
+        self.white_pieces += [Pawn(col + '2', WHITE, 'pawn') for col in 'abcdefgh']
+        self.white_pieces.append(Rook('a' + '1', WHITE, 'rook'))
+        self.white_pieces.append(Knight('b' + '1', WHITE, 'knight'))
+        self.white_pieces.append(Bishop('c' + '1', WHITE, 'bishop'))
+        self.white_pieces.append(Queen('d' + '1', WHITE, 'queen'))
+        self.white_pieces.append(King('e' + '1', WHITE, 'king'))
+        self.white_pieces.append(Bishop('f' + '1', WHITE, 'bishop'))
+        self.white_pieces.append(Knight('g' + '1', WHITE, 'knight'))
+        self.white_pieces.append(Rook('h' + '1', WHITE, 'rook'))
 
-        self.blackPieces += [Pawn(col + '7', BLACK) for col in 'abcdefgh']
-        self.blackPieces.append(Rook('a' + '8', BLACK))
-        self.blackPieces.append(Knight('b' + '8', BLACK))
-        self.blackPieces.append(Bishop('c' + '8', BLACK))
-        self.blackPieces.append(Queen('d' + '8', BLACK))
-        self.blackPieces.append(King('e' + '8', BLACK))
-        self.blackPieces.append(Bishop('f' + '8', BLACK))
-        self.blackPieces.append(Knight('g' + '8', BLACK))
-        self.blackPieces.append(Rook('h' + '8', BLACK))
+        self.black_pieces += [Pawn(col + '7', BLACK, 'pawn') for col in 'abcdefgh']
+        self.black_pieces.append(Rook('a' + '8', BLACK, 'rook'))
+        self.black_pieces.append(Knight('b' + '8', BLACK, 'knight'))
+        self.black_pieces.append(Bishop('c' + '8', BLACK, 'bishop'))
+        self.black_pieces.append(Queen('d' + '8', BLACK, 'queen'))
+        self.black_pieces.append(King('e' + '8', BLACK, 'king'))
+        self.black_pieces.append(Bishop('f' + '8', BLACK, 'bishop'))
+        self.black_pieces.append(Knight('g' + '8', BLACK, 'knight'))
+        self.black_pieces.append(Rook('h' + '8', BLACK, 'rook'))
 
     def movePiece(self, color, start, target):
         self.checkInputArgs(color, start, target)
@@ -58,8 +59,10 @@ class Chessboard:
 
     def makeMove(self, color, start, target):
         active_piece, passive_pieces = self.getActivePieceAndPassivePieces(color, start)
-        self.validateMove(active_piece, target)
-        self.removeCapturedPiece(passive_pieces, target)
+        self.gameRules.applyGameRules(active_piece, target)
+        for piece in passive_pieces:
+            if piece.isAtPosition(target):
+                passive_pieces.remove(piece)
         active_piece.setPosition(target)
 
     def isPositionOnChessboard(self, start):
@@ -69,8 +72,8 @@ class Chessboard:
             return True
 
     def getActivePieceAndPassivePieces(self, color, start):
-        active_pieces, passive_pieces = (self.whitePieces, self.blackPieces) if color == WHITE else (
-        self.blackPieces, self.whitePieces)
+        active_pieces, passive_pieces = (self.white_pieces, self.black_pieces) if color == WHITE else (
+            self.black_pieces, self.white_pieces)
         for active_piece in active_pieces:
             if active_piece.isAtPosition(start):
                 piece = active_piece
@@ -98,13 +101,13 @@ class Chessboard:
             return False
 
     def isTargetSameColor(self, piece, target):
-        return piece.isSameColor(target, self.whitePieces, self.blackPieces)
+        return piece.isSameColor(target, self.white_pieces, self.black_pieces)
 
     def isTargetObstructed(self, piece, target):
-        return piece.isObstructed(target, self.whitePieces, self.blackPieces)
+        return piece.isObstructed(target, self.white_pieces, self.black_pieces)
 
     def __str__(self):
-        squares = {str(p.getPosition()): p.getName() for p in self.whitePieces + self.blackPieces}
+        squares = {str(p.getPosition()): p.getName() for p in self.white_pieces + self.black_pieces}
         s = '  A B C D E F G H \n'
         for row in '87654321':
             s += row + ' '
