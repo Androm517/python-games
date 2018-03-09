@@ -2,6 +2,7 @@
 class: Position
 """
 
+
 class Position:
     def __init__(self, position):
         if isinstance(position, str):

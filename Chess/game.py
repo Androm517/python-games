@@ -3,8 +3,7 @@ import threading
 import logging
 import random
 
-from chessboard import Chessboard
-from piece import BLACK, WHITE, COLORS
+from chessboard import Chessboard, BLACK, WHITE, COLORS
 from player import Player
 from exceptions import ChessException
 
