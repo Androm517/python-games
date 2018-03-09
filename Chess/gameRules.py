@@ -2,7 +2,7 @@
 class: GameRules
 """
 from position import Position
-from piece import WHITE, BLACK
+from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK
 from exceptions import *
 
 
@@ -11,6 +11,27 @@ class GameRules:
         self.white_pieces = white_pieces
         self.black_pieces = black_pieces
         self.pieces = self.white_pieces + self.black_pieces
+
+    def setupInitialPosition(self):
+        self.white_pieces += [Pawn(col + '2', WHITE, 'pawn') for col in 'abcdefgh']
+        self.white_pieces.append(Rook('a' + '1', WHITE, 'rook'))
+        self.white_pieces.append(Knight('b' + '1', WHITE, 'knight'))
+        self.white_pieces.append(Bishop('c' + '1', WHITE, 'bishop'))
+        self.white_pieces.append(Queen('d' + '1', WHITE, 'queen'))
+        self.white_pieces.append(King('e' + '1', WHITE, 'king'))
+        self.white_pieces.append(Bishop('f' + '1', WHITE, 'bishop'))
+        self.white_pieces.append(Knight('g' + '1', WHITE, 'knight'))
+        self.white_pieces.append(Rook('h' + '1', WHITE, 'rook'))
+
+        self.black_pieces += [Pawn(col + '7', BLACK, 'pawn') for col in 'abcdefgh']
+        self.black_pieces.append(Rook('a' + '8', BLACK, 'rook'))
+        self.black_pieces.append(Knight('b' + '8', BLACK, 'knight'))
+        self.black_pieces.append(Bishop('c' + '8', BLACK, 'bishop'))
+        self.black_pieces.append(Queen('d' + '8', BLACK, 'queen'))
+        self.black_pieces.append(King('e' + '8', BLACK, 'king'))
+        self.black_pieces.append(Bishop('f' + '8', BLACK, 'bishop'))
+        self.black_pieces.append(Knight('g' + '8', BLACK, 'knight'))
+        self.black_pieces.append(Rook('h' + '8', BLACK, 'rook'))
 
     def applyGameRules(self, active_piece, target):
         target = Position(target)
@@ -81,6 +102,8 @@ class GameRules:
         possible_moves.append(start.add(Position( (2, -1))))
         if target in possible_moves:
             attacking_target = self.moveAttacking(active_piece, target)
+        else:
+            attacking_target = False
         # check rules
         if not attacking_target:
             raise ImpossibleMoveException(active_piece, target)
