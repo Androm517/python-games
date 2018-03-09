@@ -1,4 +1,6 @@
-
+"""
+exceptions.py: Chess specific exceptions.
+"""
 
 class ChessException(Exception):
     pass

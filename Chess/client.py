@@ -1,7 +1,5 @@
 """
-Program: Chess
-av: Olof Svedvall
-version 0.3
+client.py: Connect the client to the server.
 """
 
 import sys

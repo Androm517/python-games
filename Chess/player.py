@@ -6,6 +6,8 @@ from exceptions import UnknownCommand
 
 
 class Player(threading.Thread):
+    """ Player connects to the server and is given a color. A player can play the chess pieces that
+    corresponds to its color."""
     def __init__(self, color, socket):
         super(Player, self).__init__()
 

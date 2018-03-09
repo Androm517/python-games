@@ -4,6 +4,8 @@ class: Position
 
 
 class Position:
+    """ Position implements coordinates in two dimensional euclidean space. Position has some chess specific methods,
+    possible to see if a position is on a chessboard or not."""
     def __init__(self, position):
         if isinstance(position, str):
             if len(position) != 2:

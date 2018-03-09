@@ -7,6 +7,8 @@ from exceptions import PieceNotFoundException, ImpossibleMoveException
 
 
 class GameRules:
+    """ GameRules contain game logic, present chess pieces, colors and position. It transforms chessboard positions
+    given as 'a1' to Position. Position is used for game logic."""
     def __init__(self):
         self.white_pieces = []
         self.black_pieces = []

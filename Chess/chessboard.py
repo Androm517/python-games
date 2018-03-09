@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Chessboard:
+    """ Chessboard keeps track what color is at play. It has a set of GameRules to check if a move is correct.
+    A position is represented as letter + number ('a1'), because its a chessboard."""
     def __init__(self):
         self.currentPlayer = WHITE
         self.winner = None

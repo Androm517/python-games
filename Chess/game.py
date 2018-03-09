@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class Server:
+    """ Checks for incomming client connections. Creates players when clients connects. Initialized chessboard and
+    when there is two players it starts the game."""
     def __init__(self):
         self.players = []
         self.boardLock = threading.Lock()

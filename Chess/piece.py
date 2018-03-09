@@ -1,5 +1,6 @@
 """
 classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
+constants: BLACK, WHITE, COLORS
 """
 
 
@@ -9,6 +10,7 @@ COLORS = (BLACK, WHITE)
 
 
 class Piece:
+    """ Piece is a interface to chess pieces."""
     def __init__(self, position, color, name):
         if color not in COLORS:
             raise ValueError('{} is not a valid color'.format(color))
@@ -25,6 +27,7 @@ class Piece:
 
 
 class Pawn(Piece):
+    """ Implements Pawn."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
@@ -35,6 +38,7 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
+    """ Implements Rook."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
@@ -45,6 +49,7 @@ class Rook(Piece):
 
 
 class Knight(Piece):
+    """ Implements Knight."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
@@ -55,6 +60,7 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
+    """ Implements Bishop."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
@@ -65,6 +71,7 @@ class Bishop(Piece):
 
 
 class Queen(Piece):
+    """ Implements Queen."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
@@ -75,6 +82,7 @@ class Queen(Piece):
 
 
 class King(Piece):
+    """ Implements King."""
     def __init__(self, position, color, name):
         super().__init__(position, color, name)
 
