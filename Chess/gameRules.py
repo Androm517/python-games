@@ -2,7 +2,7 @@
 class: GameRules
 """
 from position import Position
-from piece import Pawn, Rook, Knight, Bishop, Queen, King, WHITE, BLACK, COLORS
+import piece
 from exceptions import PieceNotFoundException, ImpossibleMoveException
 
 
@@ -17,25 +17,25 @@ class GameRules:
         self.pieces = self.white_pieces + self.black_pieces
 
     def setupInitialPosition(self):
-        self.white_pieces += [Pawn(self.position(col + '2'), WHITE, 'pawn') for col in 'abcdefgh']
-        self.white_pieces.append(Rook(self.position('a' + '1'), WHITE, 'rook'))
-        self.white_pieces.append(Knight(self.position('b' + '1'), WHITE, 'knight'))
-        self.white_pieces.append(Bishop(self.position('c' + '1'), WHITE, 'bishop'))
-        self.white_pieces.append(Queen(self.position('d' + '1'), WHITE, 'queen'))
-        self.white_pieces.append(King(self.position('e' + '1'), WHITE, 'king'))
-        self.white_pieces.append(Bishop(self.position('f' + '1'), WHITE, 'bishop'))
-        self.white_pieces.append(Knight(self.position('g' + '1'), WHITE, 'knight'))
-        self.white_pieces.append(Rook(self.position('h' + '1'), WHITE, 'rook'))
+        self.white_pieces += [piece.Pawn(self.position(col + '2'), piece.Piece.WHITE, 'pawn') for col in 'abcdefgh']
+        self.white_pieces.append(piece.Rook(self.position('a' + '1'), piece.Piece.WHITE, 'rook'))
+        self.white_pieces.append(piece.Knight(self.position('b' + '1'), piece.Piece.WHITE, 'knight'))
+        self.white_pieces.append(piece.Bishop(self.position('c' + '1'), piece.Piece.WHITE, 'bishop'))
+        self.white_pieces.append(piece.Queen(self.position('d' + '1'), piece.Piece.WHITE, 'queen'))
+        self.white_pieces.append(piece.King(self.position('e' + '1'), piece.Piece.WHITE, 'king'))
+        self.white_pieces.append(piece.Bishop(self.position('f' + '1'), piece.Piece.WHITE, 'bishop'))
+        self.white_pieces.append(piece.Knight(self.position('g' + '1'), piece.Piece.WHITE, 'knight'))
+        self.white_pieces.append(piece.Rook(self.position('h' + '1'), piece.Piece.WHITE, 'rook'))
 
-        self.black_pieces += [Pawn(self.position(col + '7'), BLACK, 'pawn') for col in 'abcdefgh']
-        self.black_pieces.append(Rook(self.position('a' + '8'), BLACK, 'rook'))
-        self.black_pieces.append(Knight(self.position('b' + '8'), BLACK, 'knight'))
-        self.black_pieces.append(Bishop(self.position('c' + '8'), BLACK, 'bishop'))
-        self.black_pieces.append(Queen(self.position('d' + '8'), BLACK, 'queen'))
-        self.black_pieces.append(King(self.position('e' + '8'), BLACK, 'king'))
-        self.black_pieces.append(Bishop(self.position('f' + '8'), BLACK, 'bishop'))
-        self.black_pieces.append(Knight(self.position('g' + '8'), BLACK, 'knight'))
-        self.black_pieces.append(Rook(self.position('h' + '8'), BLACK, 'rook'))
+        self.black_pieces += [piece.Pawn(self.position(col + '7'), piece.Piece.BLACK, 'pawn') for col in 'abcdefgh']
+        self.black_pieces.append(piece.Rook(self.position('a' + '8'), piece.Piece.BLACK, 'rook'))
+        self.black_pieces.append(piece.Knight(self.position('b' + '8'), piece.Piece.BLACK, 'knight'))
+        self.black_pieces.append(piece.Bishop(self.position('c' + '8'), piece.Piece.BLACK, 'bishop'))
+        self.black_pieces.append(piece.Queen(self.position('d' + '8'), piece.Piece.BLACK, 'queen'))
+        self.black_pieces.append(piece.King(self.position('e' + '8'), piece.Piece.BLACK, 'king'))
+        self.black_pieces.append(piece.Bishop(self.position('f' + '8'), piece.Piece.BLACK, 'bishop'))
+        self.black_pieces.append(piece.Knight(self.position('g' + '8'), piece.Piece.BLACK, 'knight'))
+        self.black_pieces.append(piece.Rook(self.position('h' + '8'), piece.Piece.BLACK, 'rook'))
 
     def applyGameRules(self, color, start, target):
         start = self.position(start)
@@ -65,15 +65,13 @@ class GameRules:
                 break
 
     def getActivePieceAndPassivePieces(self, color, start):
-        active_pieces, passive_pieces = (self.white_pieces, self.black_pieces) if color == WHITE else (
+        active_pieces, passive_pieces = (self.white_pieces, self.black_pieces) if color == piece.Piece.WHITE else (
             self.black_pieces, self.white_pieces)
         for active_piece in active_pieces:
             if active_piece.position == start:
-                piece = active_piece
-                break
+                return active_piece, passive_pieces
         else:
             raise PieceNotFoundException(color, start)
-        return piece, passive_pieces
 
     def pawnRules(self, active_piece, target, direction):
         # Rule 1
@@ -89,17 +87,17 @@ class GameRules:
         test_distance = active_piece.position.add(direction)
         if not target == test_distance:
             return False
-        pieces = self.white_pieces if active_piece.color == BLACK else self.black_pieces
-        for piece in pieces:
-            if piece.position == target:
-                pieces.remove(piece)
+        passive_pieces = self.white_pieces if active_piece.color == piece.Piece.BLACK else self.black_pieces
+        for passive_piece in passive_pieces:
+            if passive_piece.position == target:
+                passive_pieces.remove(passive_piece)
                 return True
         return False
 
     def pawnMoveForwardRule(self, active_piece, target, direction):
         if not target.getColumn() == active_piece.position.getColumn():
             return False
-        pawn_base_row = Position('a2') if active_piece.color == WHITE else Position('a7')
+        pawn_base_row = Position('a2') if active_piece.color == piece.Piece.WHITE else Position('a7')
         if target.sub(direction) == active_piece.position:
             forward_move = self.moveDirection(active_piece, target, direction)
         elif target.sub(direction).sub(direction).getRow() == pawn_base_row.getRow():
@@ -173,9 +171,9 @@ class GameRules:
             raise ImpossibleMoveException(active_piece, target)
 
     def moveAttacking(self, active_piece, target):
-        pieces = self.white_pieces if active_piece.color == WHITE else self.black_pieces
-        for piece in pieces:
-            if piece.position == target:
+        active_pieces = self.white_pieces if active_piece.color == piece.Piece.WHITE else self.black_pieces
+        for active_piece in active_pieces:
+            if active_piece.position == target:
                 return False
         return True
 

@@ -3,7 +3,8 @@ class: Chessboard
 """
 import logging
 
-from gameRules import GameRules, WHITE, BLACK, COLORS
+from gameRules import GameRules
+import piece
 from exceptions import NotYourTurnException
 
 
@@ -14,14 +15,14 @@ class Chessboard:
     """ Chessboard keeps track what color is at play. It has a set of GameRules to check if a move is correct.
     A position is represented as letter + number ('a1'), because its a chessboard."""
     def __init__(self):
-        self.currentPlayer = WHITE
+        self.currentPlayer = piece.Piece.WHITE
         self.winner = None
         self.gameRules = GameRules()
 
     def movePiece(self, color, start, target):
         self.checkInputArgs(color, start, target)
         self.makeMove(color, start, target)
-        self.currentPlayer = BLACK if self.currentPlayer == WHITE else WHITE
+        self.currentPlayer = piece.Piece.BLACK if self.currentPlayer == piece.Piece.WHITE else piece.Piece.WHITE
 
         return "Move OK!"
 
