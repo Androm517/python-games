@@ -37,10 +37,10 @@ class Chessboard:
         self.gameRules.applyGameRules(color, start, target)
 
     def isPositionOnChessboard(self, start):
-        if not start[0] in 'abcdefgh' or not start[1] in '12345678':
-            return False
-        else:
+        if start[0] in 'abcdefgh' and start[1] in '12345678':
             return True
+        else:
+            return False
 
     def __str__(self):
         return str(self.gameRules)
