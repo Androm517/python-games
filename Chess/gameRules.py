@@ -10,6 +10,8 @@ class GameRules:
     """ GameRules contain game logic, present chess pieces, colors and position. It transforms chessboard positions
     given as 'a1' to Position. Position is used for game logic."""
     def __init__(self):
+        self.white = piece.Piece.WHITE
+        self.black = piece.Piece.BLACK
         self.white_pieces = []
         self.black_pieces = []
         self.position = position.Position
@@ -65,7 +67,7 @@ class GameRules:
                 break
 
     def getActivePieceAndPassivePieces(self, color, start):
-        active_pieces, passive_pieces = (self.white_pieces, self.black_pieces) if color == piece.Piece.WHITE else (
+        active_pieces, passive_pieces = (self.white_pieces, self.black_pieces) if color == self.white else (
             self.black_pieces, self.white_pieces)
         for active_piece in active_pieces:
             if active_piece.position == start:
@@ -87,7 +89,7 @@ class GameRules:
         test_distance = active_piece.position.add(direction)
         if not target == test_distance:
             return False
-        passive_pieces = self.white_pieces if active_piece.color == piece.Piece.BLACK else self.black_pieces
+        passive_pieces = self.black_pieces if active_piece.color == self.white else self.white_pieces
         for passive_piece in passive_pieces:
             if passive_piece.position == target:
                 passive_pieces.remove(passive_piece)
@@ -97,7 +99,7 @@ class GameRules:
     def pawnMoveForwardRule(self, active_piece, target, direction):
         if not target.getColumn() == active_piece.position.getColumn():
             return False
-        pawn_base_row = self.position('a2') if active_piece.color == piece.Piece.WHITE else self.position('a7')
+        pawn_base_row = self.position('a2') if active_piece.color == self.white else self.position('a7')
         if target.sub(direction) == active_piece.position:
             forward_move = self.moveDirection(active_piece, target, direction)
         elif target.sub(direction).sub(direction).getRow() == pawn_base_row.getRow():
@@ -171,7 +173,7 @@ class GameRules:
             raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def moveAttacking(self, active_piece, target):
-        active_pieces = self.white_pieces if active_piece.color == piece.Piece.WHITE else self.black_pieces
+        active_pieces = self.white_pieces if active_piece.color == self.white else self.black_pieces
         for active_piece in active_pieces:
             if active_piece.position == target:
                 return False

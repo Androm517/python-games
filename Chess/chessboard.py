@@ -15,14 +15,16 @@ class Chessboard:
     """ Chessboard keeps track what color is at play. It has a set of GameRules to check if a move is correct.
     A position is represented as letter + number ('a1'), because its a chessboard."""
     def __init__(self):
-        self.currentPlayer = piece.Piece.WHITE
+        self.black = piece.Piece.BLACK
+        self.white = piece.Piece.WHITE
+        self.currentPlayer = self.white
         self.winner = None
         self.gameRules = gameRules.GameRules()
 
     def movePiece(self, color, start, target):
         self.checkInputArgs(color, start, target)
         self.makeMove(color, start, target)
-        self.currentPlayer = piece.Piece.BLACK if self.currentPlayer == piece.Piece.WHITE else piece.Piece.WHITE
+        self.currentPlayer = self.black if self.currentPlayer == self.white else self.white
 
         return "Move OK!"
 
