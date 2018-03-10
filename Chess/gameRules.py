@@ -99,7 +99,14 @@ class GameRules:
     def pawnMoveForwardRule(self, active_piece, target, direction):
         if not target.getColumn() == active_piece.position.getColumn():
             return False
-        return self.moveDirection(active_piece, target, direction)
+        pawn_base_row = Position('a2') if active_piece.color == WHITE else Position('a7')
+        if target.sub(direction) == active_piece.position:
+            forward_move = self.moveDirection(active_piece, target, direction)
+        elif target.sub(direction).sub(direction).getRow() == pawn_base_row.getRow():
+            forward_move = self.moveDirection(active_piece, target, direction)
+        else:
+            forward_move = False
+        return forward_move
 
     def rookRules(self, active_piece, target, direction):
         # rule 1
