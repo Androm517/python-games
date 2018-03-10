@@ -3,9 +3,9 @@ class: Chessboard
 """
 import logging
 
-from gameRules import GameRules
+import gameRules
 import piece
-from exceptions import NotYourTurnException
+import exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class Chessboard:
     def __init__(self):
         self.currentPlayer = piece.Piece.WHITE
         self.winner = None
-        self.gameRules = GameRules()
+        self.gameRules = gameRules.GameRules()
 
     def movePiece(self, color, start, target):
         self.checkInputArgs(color, start, target)
@@ -28,7 +28,7 @@ class Chessboard:
 
     def checkInputArgs(self, color, start, target):
         if color != self.currentPlayer:
-            raise NotYourTurnException(color)
+            raise exceptions.NotYourTurnException(color)
         if not self.isPositionOnChessboard(start):
             raise ValueError('{} is not a valid position'.format(start))
         if not self.isPositionOnChessboard(target):

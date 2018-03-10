@@ -1,9 +1,9 @@
 """
 class: GameRules
 """
-from position import Position
+import position
 import piece
-from exceptions import PieceNotFoundException, ImpossibleMoveException
+import exceptions
 
 
 class GameRules:
@@ -12,7 +12,7 @@ class GameRules:
     def __init__(self):
         self.white_pieces = []
         self.black_pieces = []
-        self.position = Position
+        self.position = position.Position
         self.setupInitialPosition()
         self.pieces = self.white_pieces + self.black_pieces
 
@@ -71,7 +71,7 @@ class GameRules:
             if active_piece.position == start:
                 return active_piece, passive_pieces
         else:
-            raise PieceNotFoundException(color, start)
+            raise exceptions.PieceNotFoundException(color, start)
 
     def pawnRules(self, active_piece, target, direction):
         # Rule 1
@@ -81,7 +81,7 @@ class GameRules:
         # Rule 3 addera fler regler. Till exempel an passant.
         # check rules
         if not forward_move and not capture:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def pawnMoveCapture(self, active_piece, target, direction):
         test_distance = active_piece.position.add(direction)
@@ -97,7 +97,7 @@ class GameRules:
     def pawnMoveForwardRule(self, active_piece, target, direction):
         if not target.getColumn() == active_piece.position.getColumn():
             return False
-        pawn_base_row = Position('a2') if active_piece.color == piece.Piece.WHITE else Position('a7')
+        pawn_base_row = self.position('a2') if active_piece.color == piece.Piece.WHITE else self.position('a7')
         if target.sub(direction) == active_piece.position:
             forward_move = self.moveDirection(active_piece, target, direction)
         elif target.sub(direction).sub(direction).getRow() == pawn_base_row.getRow():
@@ -117,7 +117,7 @@ class GameRules:
         # rule 2
         attacking_target = self.moveAttacking(active_piece, target)
         if not move_to_adjacent_of_target or not attacking_target:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def knightRules(self, active_piece, target, direction):
         #rule 1
@@ -137,7 +137,7 @@ class GameRules:
             attacking_target = False
         # check rules
         if not attacking_target:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def bishopRules(self, active_piece, target, direction):
         # rule 1
@@ -151,7 +151,7 @@ class GameRules:
         attacking_target = self.moveAttacking(active_piece, target)
         # check rules
         if not move_to_adjacent_of_target or not attacking_target:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def queenRules(self, active_piece, target, direction):
         # rule 1
@@ -161,14 +161,14 @@ class GameRules:
         attacking_target = self.moveAttacking(active_piece, target)
         # check rules
         if not move_to_adjacent_of_target or not attacking_target:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def kingRules(self, active_piece, target, direction):
         # rule 1
         attacking_target = self.moveAttacking(active_piece, target)
         # check rules
         if not attacking_target:
-            raise ImpossibleMoveException(active_piece, target)
+            raise exceptions.ImpossibleMoveException(active_piece, target)
 
     def moveAttacking(self, active_piece, target):
         active_pieces = self.white_pieces if active_piece.color == piece.Piece.WHITE else self.black_pieces
