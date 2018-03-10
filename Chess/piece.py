@@ -1,10 +1,6 @@
 """
 classes: Piece, Pawn, Knight, Rook, Bishop, Queen, King
-constants: BLACK, WHITE, COLORS
 """
-
-
-
 
 
 class Piece:
